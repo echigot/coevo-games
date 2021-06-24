@@ -1,11 +1,11 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
    name='coevo',
    version='0.1.0',
    author='Estelle Chigot',
    author_email='estelle.chigot@gmail.com',
-   packages=['coevo'],
+   packages=find_packages(),
    license='MIT',
    description='Coevolution of Agents and Games',
    long_description=open('README.md').read(),
