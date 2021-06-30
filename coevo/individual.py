@@ -1,5 +1,3 @@
-import re
-from unittest import result
 import gym
 import griddly
 
@@ -16,8 +14,7 @@ class Individual:
         self.reward = reward+self.reward
         if (self.done):
             env.reset()
-        
-    
+          
     def play_one_game(self, agent, env):
         cpt = 0
         while(not self.done and cpt < 300):
