@@ -25,17 +25,12 @@ class AgentNet(nn.Module):
         super(AgentNet, self).__init__()
 
         in_channels = obs.shape[0]
-        in_width = obs.shape[1]
-        in_height = obs.shape[2]
 
         out_channels = 16
-        size_pool = 2048
 
-        # One hidden 2D convolution layer:
-        #   in_channels: variable
-        #   out_channels: 16
-        #   kernel_size: 3 of a 3x3 filter matrix
-        #   stride: 1
+        size_pool = 2048
+        out_size = size_pool//4
+
         self.conv = nn.Sequential(
             layer_init(nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=1)),
             nn.ReLU(),
@@ -44,20 +39,10 @@ class AgentNet(nn.Module):
             GlobalAvePool(size_pool),
             layer_init(nn.Linear(size_pool, size_pool//2)),
             nn.ReLU(),
-            layer_init(nn.Linear(size_pool//2, size_pool//4)),
+            layer_init(nn.Linear(size_pool//2, out_size)),
             nn.ReLU(),
         )
 
-        out_size = size_pool//4
-        
-        # Final fully connected hidden layer:
-        #   the number of linear unit depends on the output of the conv
-        #   the output consist 128 rectified units
-        def size_linear_unit(size, kernel_size=3, stride=1):
-            return (size - (kernel_size - 1) - 1) // stride + 1
-            
-        #num_linear_units = size_linear_unit(size_pool) * size_linear_unit(size_pool) * out_channels//2
-        #self.fc_hidden = nn.Linear(in_features=num_linear_units, out_features=128)
         self.fc_hidden = nn.Linear(in_features=out_size, out_features=128)
 
         # Output layer:
@@ -78,6 +63,9 @@ class AgentNet(nn.Module):
 
     def get_parameters(self):
         return self.parameters
+
+    def get_result(self, env):
+        return np.random.randint(0, env.action_space.n - 1)
 
 
 def get_state(s, device="cpu"):
