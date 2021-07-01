@@ -64,9 +64,6 @@ class AgentNet(nn.Module):
     def get_parameters(self):
         return self.parameters
 
-    def get_result(self, env):
-        return np.random.randint(0, env.action_space.n - 1)
-
 
 def get_state(s, device="cpu"):
     return torch.tensor(s, device=device).unsqueeze(0).float()
