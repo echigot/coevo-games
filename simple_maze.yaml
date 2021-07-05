@@ -1,11 +1,11 @@
 Version: "0.1"
 Environment:
-  Name: Labyrinth
+  Name: SimpleMaze
   Description: Its a maze, find your way out. Watch out for spikey things.
   Observers:
     Sprite2D:
       TileSize: 24
-      BackgroundTile: sprites/tile.png
+      BackgroundTile: gvgai/oryx/backBiege.png
   Player:
     AvatarObject: avatar
   Termination:
@@ -21,43 +21,43 @@ Environment:
       w . . . . . . . . . . . . . . w
       w . . . . . . . . . . . . . . w
       w . . . . . . . . . . . . . . w
+      w . . . . . . A . . . . . . . w
       w . . . . . . . . . . . . . . w
       w . . . . . . . . . . . . . . w
       w . . . . . . . . . . . . . . w
       w . . . . . . . . . . . . . . w
       w . . . . . . . . . . . . . . w
       w . . . . . . . . . . . . . . w
-      w A . . . . . . t . . . . . . w
       w w w w w w w w w w w w w w w w
     - |
       w w w w w w w w w w w w w w w w
-      w w w w w w w w w w w w w . . w
-      w x t t t t w . . . . . w w . w
-      w . . . . . . . w w w . . . . w
-      w w w w w w w w w . w w w w . w
-      w . . . w w w w w . w w w w . w
-      w w w . . . . . . . . . w w . w
-      w t w . w w w w w . w . . . . w
-      w . w w w w w w w . w w w w . w
-      w . w w w . . . . . w w w w . w
-      w . w w w . w w w w w w w w . w
-      w . w w w . w w w . w w w w w w
-      w . . . . . . . . . . . . . A w
+      w . . . . . . x . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . A . . . . . . t w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
       w w w w w w w w w w w w w w w w
     - |
       w w w w w w w w w w w w w w w w
-      w w w w w w w . x w w . . . t w
-      w . . . . . . . w . w . w w w w
-      w . w w . w w w w . w . . . . w
-      w . w w . w w w . . w w w w . w
-      w w w t . w w w . w w w . . . w
-      w . . . . w w w . w w w . w w w
-      w . w w w w w w . w w w . w w w
-      w . t . . . . . . . . . . . . w
-      w . w . w w w w . w w w . w w w
-      w . w . . . . w . w w w . w w w
-      w . w w w w . w . w w w . w w w
-      w . . . . . . w A w w w . w w w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . x . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . w w w . . . . . . w
+      w . . . . . . A . . . . t . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
       w w w w w w w w w w w w w w w w
     - |
       w w w w w w w w w w w w w w w w
@@ -126,7 +126,7 @@ Objects:
     MapCharacter: A
     Observers:
       Sprite2D:
-        - Image: sprites/avatar.png
+        - Image: gvgai/newset/girl1.png
       Block2D:
         - Shape: triangle
           Color: [0.2, 0.8, 0.2]
@@ -136,7 +136,7 @@ Objects:
     MapCharacter: x
     Observers:
       Sprite2D:
-        - Image: sprites/exit.png
+        - Image: gvgai/newset/exit2.png
       Block2D:
         - Shape: square
           Color: [0.2, 0.2, 0.8]
@@ -146,7 +146,7 @@ Objects:
     MapCharacter: t
     Observers:
       Sprite2D:
-        - Image: sprites/trap.png
+        - Image: gvgai/oryx/spike2.png
       Block2D:
         - Shape: triangle
           Color: [1.0, 0.0, 0.0]
@@ -156,7 +156,7 @@ Objects:
     MapCharacter: w
     Observers:
       Sprite2D:
-        - Image: sprites/wall.png
+        - Image: oryx/oryx_fantasy/wall8-0.png
       Block2D:
         - Shape: square
           Color: [0.5, 0.5, 0.5]

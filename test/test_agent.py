@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
+from coevo.evo_strat import Element
 import gym
-from griddly import GymWrapperFactory, gd
+from griddly import GymWrapper, gd
 import numpy as np
-import torch
 from torch.functional import Tensor
-from torch.nn import parameter
-from coevo import AgentNet, get_state, Individual, fitness
+from coevo import AgentNet, get_state, Individual, fitness, EvoStrat
 
 
 
@@ -38,10 +37,14 @@ def test_fitness():
 
     fit = fitness(indiv, env)
 
-    assert fit >= 0
+    assert fit <= 0
 
 def test_fitness_after_step():
-    env, obs, n_action, agent = init_test_env()
+    env = GymWrapper(yaml_file="simple_maze.yaml")
+    obs = env.reset()
+
+    n_action = env.action_space.n
+    agent = AgentNet(obs, n_action)
 
     parameters = agent.get_parameters()
     
@@ -49,32 +52,43 @@ def test_fitness_after_step():
     assert indiv.fitness == 0
 
     fit_init = fitness(indiv, env)
-    assert fit_init == 0
+    assert fit_init <= 0
 
-    #indiv.play_one_game(agent, env, obs, n_action)
+    indiv.play_one_game(agent, env, obs, n_action)
 
     current_fit = fitness(indiv, env)
-    assert current_fit >= fit_init
-
-
+    #assert current_fit != fit_init
 
 
 def test_population():
-    wrapper = GymWrapperFactory()
-    wrapper.build_gym_from_yaml('SimpleMaze', 'simple_maze.yaml')
-    env = gym.make('GDY-SimpleMaze-v0')
+    
+    population = []
 
+    for i in range(10):
+        population.append(create_element())
+    
+    for e in population:
+        print("--")
+        obs = e.env.reset()
+        n_action = e.env.action_space.n
+        e.indiv.play_one_game(e.agent, e.env, obs, n_action)
+
+    best_indiv = EvoStrat.select(population, 3)
+    new_pop = EvoStrat.evolve(best_indiv, len(population))
+
+
+def create_element():
+    env = GymWrapper(yaml_file="simple_maze.yaml")
     obs = env.reset()
     n_action = env.action_space.n
+
     agent = AgentNet(obs, n_action)
-
     parameters = agent.get_parameters()
-    population = []
-    for i in range(10):
-        population.append(Individual(parameters))
+    indiv = Individual(parameters)
 
+    return Element(agent=agent, env=env, indiv=indiv)
 
-
+#test_population()
 
 #with torch.no_grad():
 #    params = agent.parameters()

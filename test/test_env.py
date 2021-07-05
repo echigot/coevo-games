@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import gym
-from griddly import GymWrapperFactory, gd
+from griddly import GymWrapper, gd
+import yaml
+from yaml.loader import Loader
 
 
 def test_griddly():
@@ -15,13 +17,14 @@ def test_griddly():
             env.reset()
 
 def test_custom_env():
-    wrapper = GymWrapperFactory()
-    wrapper.build_gym_from_yaml('SimpleMaze', 'simple_maze.yaml')
-    env = gym.make('GDY-SimpleMaze-v0')
+    env = GymWrapper(yaml_file='simple_maze.yaml')
+
+    env.reset()
 
     for s in range(10):
         obs, reward, done, info = env.step(env.action_space.sample())
-        env.render()
         if done:
             env.reset()
 
+
+#test_custom_env()
