@@ -21,14 +21,14 @@ def test_nn_creation():
 
     result = agent.forward(get_state(obs))
 
-    assert Tensor.size(result)[1] == 5
+    assert Tensor.size(result)[1] == n_action
 
 def test_fitness():
     env, obs, n_action, agent = init_test_env()
 
     parameters = agent.get_parameters()
 
-    assert parameters != None
+    assert len(parameters) >= 0
     
     indiv = Individual(parameters)
     assert indiv.fitness == 0
@@ -58,6 +58,7 @@ def test_fitness_after_step():
 
     current_fit = fitness(indiv, env)
     #assert current_fit != fit_init
+    assert current_fit <= 0
 
 
 def test_population():
