@@ -62,6 +62,21 @@ Environment:
     - |
       w w w w w w w w w w w w w w w w
       w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . w x . . . . . . w
+      w . . . . . . A . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w . . . . . . . . . . . . . . w
+      w w w w w w w w w w w w w w w w
+    - |
+      w w w w w w w w w w w w w w w w
+      w . . . . . . . . . . . . . . w
       w . w w w w w w w w w w w w . w
       w . w . . . . . . . . . . w . w
       w . w w w . w w w . w w . w . w

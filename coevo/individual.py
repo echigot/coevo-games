@@ -1,5 +1,6 @@
+from coevo.agent_net import AgentNet
 import gym
-import griddly
+from griddly import GymWrapper, gd
 import numpy as np
 import torch
 from coevo import get_state
@@ -9,7 +10,7 @@ class Individual:
     nb_steps_max = 15
 
     def __init__(self, genes):
-        self._genes = genes
+        self.genes = genes
         self.fitness = 0
         self.done = False
         self.steps = 0
@@ -22,8 +23,11 @@ class Individual:
     @genes.setter
     def genes(self, new_genes):
         self._genes = new_genes
-        self.fitness = None
-        self.age=0
+        self.fitness = 0
+        self.age = 0
+        self.steps = 0
+        self.done = False
+        self.agent.set_params(new_genes)
 
     def __repr__(self):
         return f"ES Indiv (fitness={self.fitness})"
@@ -39,29 +43,40 @@ class Individual:
             env.reset()
         return obs_2
 
-    def play_one_game(self, agent, env):
+    def play_one_game(self, agent, env, render=False):
         obs = env.reset()
         while((not self.done) and self.steps < Individual.nb_steps_max):
             result = get_result(agent, obs)
             obs = self.do_action(result, env)
-            # print(result)
-            # env.render()
             self.steps = self.steps + 1
-
+            if render:
+                env.render()
+            
         self.fitness = fitness(self, env)
 
 
 class AgentInd(Individual):
 
-    def __init__(self, genes=None):
-        if genes is None:
-            # TODO: create genes
-            genes = np.random.rand(1)
-        super(EnvInd, self).__init__(genes)
-        self.agent = None # TODO: include agent inside individual ?
+    def __init__(self, env=None, genes=None):
+        if env is None:
+            env = GymWrapper(yaml_file="simple_maze.yaml", level=0)
 
-    def play_game(self, env):
-        self.play_one_game(self.agent, env)
+        obs = env.reset()
+        
+        self.agent = AgentNet(obs, env.action_space.n)
+
+        if genes is not None:
+            self.genes = genes
+            self.agent.set_params(genes)
+        else:
+            self.genes = self.agent.get_params()
+
+        super(AgentInd, self).__init__(self.genes)
+
+    def play_game(self, env, render=False):
+        self.play_one_game(self.agent, env, render)
+
+    
 
 
 class EnvInd(Individual):
@@ -82,8 +97,7 @@ def fitness(indiv, env):
     goal_location = get_object_location(env, 'exit')
     avatar_location = get_object_location(env, 'avatar')
     distance = np.linalg.norm(np.array(goal_location) - np.array(avatar_location))
-    print('distance = ' , distance)
-    return indiv.fitness - distance/Individual.nb_steps_max
+    return indiv.fitness*10 - distance
     
 def get_result(agent, obs):
     actions = agent(get_state(obs))

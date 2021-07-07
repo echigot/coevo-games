@@ -51,6 +51,7 @@ class AgentNet(nn.Module):
         self.output = nn.Linear(in_features=128, out_features=num_actions)
         self.n_out=num_actions
 
+
     # As per implementation instructions according to pytorch, the forward function should be overwritten by all
     # subclasses
     def forward(self, x):

@@ -3,8 +3,8 @@ from .evolution_strategies import *
 
 class Canonical(ES):
     """Canonical ES for optimisation of float arrays"""
-    def __init__(self, d, direction="max", n=None, n_parents=None, save_path=None):
-        super().__init__(d, direction, n, save_path)
+    def __init__(self, d, direction="max", n=None, n_parents=None, save_path=None, seed=None):
+        super().__init__(d, direction, n, save_path, seed)
         
         # Number of parents selected
         if n_parents is None:
@@ -18,7 +18,7 @@ class Canonical(ES):
         self.c_sigma_factor = 1
 
         # Current solution (The one that we report).
-        self.mu = np.random.rand(self.d)
+        self.mu = self.rng.random(self.d)
         # Computed update, step in parameter space computed in each iteration.
         self.step = 0
 
@@ -34,7 +34,7 @@ class Canonical(ES):
         self.c_sigma *= self.c_sigma_factor
         self.const_1 = np.sqrt(self.u_w * self.c_sigma * (2 - self.c_sigma))
 
-        self.s = np.random.randn(self.d, self.n_pop)
+        self.s = self.rng.standard_normal((self.d, self.n_pop))
 
         
     def __repr__(self):
@@ -72,16 +72,16 @@ class Canonical(ES):
         # self.p_sigma = (1 - self.c_sigma) * self.p_sigma + self.const_1 * step
         # self.sigma = self.sigma * np.exp((self.c_sigma / 2) * (np.sum(np.square(self.p_sigma)) / self.d - 1))
         
-        self.s = np.random.randn(d, n)
+        self.s = self.rng.standard_normal((self.d, self.n_pop))
 
         self.get_hof()
 
     def export(self):
         return {
-            "n_parents":list(self.state.n_parents),
-            "sigma":list(self.state.sigma)
+            "n_parents":self.n_parents,
+            "sigma":self.sigma
         }
         
     def load(self, d):
-        self.state.n_parents = d["n_parents"]
-        self.state.sigma = d["sigma"]
+        self.n_parents = d["n_parents"]
+        self.sigma = d["sigma"]

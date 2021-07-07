@@ -4,30 +4,38 @@ import gym
 from griddly import GymWrapper, gd
 import numpy as np
 from torch.functional import Tensor
-from coevo import AgentNet, get_state, Individual, fitness, EvoStrat, Canonical
+import copy as cp
+from coevo import AgentNet, get_state, Individual, fitness, Canonical, AgentInd, EnvInd
 
-def init_test_env():
-    env = gym.make('GDY-Labyrinth-v0')
-    obs = env.reset()
-    n_action = env.action_space.n
-    agent = AgentNet(obs, n_action)
-    return env, obs, n_action, agent
+def init_custom_env(pretty_mode=False, level=0):
+    if pretty_mode:
+        env = GymWrapper(yaml_file="simple_maze.yaml",
+            global_observer_type=gd.ObserverType.SPRITE_2D, player_observer_type=gd.ObserverType.SPRITE_2D, level=level)
+    else:
+        env = GymWrapper(yaml_file="simple_maze.yaml", level=level)
+    
+    return env
+
 
 
 def test_agent_es():
 
-    env, obs, n_action, agent = init_test_env()
-    params = agent.get_parameters()
+    env = init_custom_env()
+    obs = env.reset()
+    n_action = env.action_space.n
+    agent = AgentNet(obs, n_action)
+
+    params = agent.get_params()
     d = len(params)
 
-    es = Canonical(d)
-    assert es.n > 0 # population size
+    es = Canonical(d, n=15)
+    assert es.n_pop > 0 # population size
 
-    for i in range(es.n):
-        es.population.append(AgentInd())
+    for i in range(es.n_pop):
+        es.population.append(AgentInd(env=env))
 
     pop = es.ask()
-    orig_pop = deepcopy(pop)
+    orig_pop = cp.deepcopy(pop)
 
     for i in pop:
         i.play_game(env)
@@ -35,28 +43,38 @@ def test_agent_es():
 
     es.tell(pop)
 
-    es.update()
-
     pop2 = es.ask()
 
     assert len(orig_pop) == len(pop2)
 
     for i in range(len(pop)):
         assert np.any(orig_pop[i].genes != pop2[i].genes)
+    
+    for i in pop2:
+        i.play_game(env)
 
 
-def test_population():
+def test_generations():
+    env = init_custom_env()
+    obs = env.reset()
+    n_action = env.action_space.n
+    agent = AgentNet(obs, n_action)
 
-    population = []
+    params = agent.get_params()
+    d = len(params)
+    es = Canonical(d)
+
+    for i in range(es.n_pop):
+        es.population.append(AgentInd(env=env))
 
     for i in range(10):
-        population.append(Individual())
+        pop = es.ask()
+        env = init_custom_env(level=1)
 
-    for e in population:
-        print("--")
-        obs = e.env.reset()
-        n_action = e.env.action_space.n
-        e.indiv.play_one_game(e.agent, e.env, obs, n_action)
+        for i in pop:
+            i.play_game(env)
 
-    best_indiv = EvoStrat.select(population, 3)
-    new_pop = EvoStrat.evolve(best_indiv, len(population))
+        es.tell(pop)
+        es.log()
+
+    es.plot(data='mean')

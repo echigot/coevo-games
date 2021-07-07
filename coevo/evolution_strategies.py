@@ -1,7 +1,6 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from tqdm import tqdm
 from copy import deepcopy
 import json
 
@@ -38,7 +37,7 @@ class ES_Ind:
 
 
 class ES:
-    def  __init__(self, d, direction="max", n=None, save_path=None):
+    def  __init__(self, d, direction="max", n=None, save_path=None, seed=None):
         # Algorithm maximizes, so we multiply fitnesses by -1 if we want to minimize
         if direction == "min":
             self.optim_direction = -1.0
@@ -46,7 +45,11 @@ class ES:
             self.optim_direction = 1.0
         else:
             raise 
-            
+        
+        if seed is None:
+            self.rng = np.random.default_rng()
+        else:
+            self.rng = np.random.default_rng(seed)
         self.d = d
             
         if n is None:
@@ -130,11 +133,10 @@ class ES:
     # Specific to algo 
     def populate(self):
         for i in range(self.n_pop):
-            new_genes = np.random.random(self.d)
+            new_genes = self.rng.standard_normal(self.d)
             self.population[i].genes = new_genes 
         return self
     
     def update(self):
         self.get_hof()
         self.save()
-        

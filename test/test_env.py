@@ -18,7 +18,6 @@ def test_griddly():
 
 def test_custom_env():
     env = GymWrapper(yaml_file='simple_maze.yaml')
-
     env.reset()
 
     for s in range(10):
