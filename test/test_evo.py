@@ -28,7 +28,7 @@ def test_agent_es():
     params = agent.get_params()
     d = len(params)
 
-    es = Canonical(d, n=15)
+    es = Canonical(d, n=5)
     assert es.n_pop > 0 # population size
 
     for i in range(es.n_pop):
@@ -38,7 +38,7 @@ def test_agent_es():
     orig_pop = cp.deepcopy(pop)
 
     for i in pop:
-        i.play_game(env)
+        i.play_game(env, render=True)
         assert i.fitness <= 0
 
     es.tell(pop)
@@ -62,19 +62,23 @@ def test_generations():
 
     params = agent.get_params()
     d = len(params)
-    es = Canonical(d)
+    es = Canonical(d, n=15)
 
     for i in range(es.n_pop):
         es.population.append(AgentInd(env=env))
 
-    for i in range(10):
+    for i in range(3):
         pop = es.ask()
-        env = init_custom_env(level=1)
+        env = init_custom_env(level=0)
 
         for i in pop:
-            i.play_game(env)
+            i.play_game(env, render=True)
 
         es.tell(pop)
         es.log()
+        print("--------")
 
     es.plot(data='mean')
+
+test_agent_es()
+#test_generations()

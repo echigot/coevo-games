@@ -4,10 +4,11 @@ from griddly import GymWrapper, gd
 import numpy as np
 import torch
 from coevo import get_state
+import random as rd
 
 
 class Individual:
-    nb_steps_max = 15
+    nb_steps_max = 7
 
     def __init__(self, genes):
         self.genes = genes
@@ -46,6 +47,7 @@ class Individual:
     def play_one_game(self, agent, env, render=False):
         obs = env.reset()
         while((not self.done) and self.steps < Individual.nb_steps_max):
+            #obs = np.random.randint(0,2,size=obs.shape)
             result = get_result(agent, obs)
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
@@ -63,12 +65,14 @@ class AgentInd(Individual):
 
         obs = env.reset()
         
-        self.agent = AgentNet(obs, env.action_space.n)
+        self.agent = AgentNet(get_state(obs), env.action_space.n)
 
         if genes is not None:
             self.genes = genes
             self.agent.set_params(genes)
         else:
+            print(self.agent.get_params())
+            #self.agent.set_params(self.agent.get_params())
             self.genes = self.agent.get_params()
 
         super(AgentInd, self).__init__(self.genes)
@@ -100,8 +104,11 @@ def fitness(indiv, env):
     return indiv.fitness*10 - distance
     
 def get_result(agent, obs):
+    #print("state ",get_state(obs))
     actions = agent(get_state(obs))
+    print(actions.detach().numpy())
     a = int(np.argmax(actions.detach().numpy()))
+    #print(a)
     return a
 
 def get_object_location(env, object):

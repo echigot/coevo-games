@@ -45,3 +45,6 @@ def test_fitness_after_step():
 
     current_fit = fitness(indiv, env)
     assert current_fit <= 0
+
+
+test_fitness_after_step()
