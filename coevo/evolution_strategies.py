@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
-from copy import deepcopy
+from copy import deepcopy, copy
 import json
 
 
@@ -77,7 +77,7 @@ class ES:
         pop_with_hof = self.population + self.hof
         fitnesses = [- e.fitness for e in pop_with_hof]
         idx = np.argsort(fitnesses)
-        self.hof = [deepcopy(pop_with_hof[idx[0]])]
+        self.hof = [copy(pop_with_hof[idx[0]])]
         self.log()
         return self
     

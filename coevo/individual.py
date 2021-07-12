@@ -8,7 +8,7 @@ import random as rd
 
 
 class Individual:
-    nb_steps_max = 7
+    nb_steps_max = 30
 
     def __init__(self, genes):
         self.genes = genes
@@ -71,7 +71,7 @@ class AgentInd(Individual):
             self.genes = genes
             self.agent.set_params(genes)
         else:
-            print(self.agent.get_params())
+            #print(self.agent.get_params())
             #self.agent.set_params(self.agent.get_params())
             self.genes = self.agent.get_params()
 
@@ -106,7 +106,7 @@ def fitness(indiv, env):
 def get_result(agent, obs):
     #print("state ",get_state(obs))
     actions = agent(get_state(obs))
-    print(actions.detach().numpy())
+    #print(actions.detach().numpy())
     a = int(np.argmax(actions.detach().numpy()))
     #print(a)
     return a

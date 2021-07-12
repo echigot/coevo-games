@@ -23,12 +23,12 @@ def test_agent_es():
     env = init_custom_env()
     obs = env.reset()
     n_action = env.action_space.n
-    agent = AgentNet(obs, n_action)
+    agent = AgentNet(get_state(obs), n_action)
 
     params = agent.get_params()
     d = len(params)
 
-    es = Canonical(d, n=5)
+    es = Canonical(d, n=30)
     assert es.n_pop > 0 # population size
 
     for i in range(es.n_pop):
@@ -38,8 +38,10 @@ def test_agent_es():
     orig_pop = cp.deepcopy(pop)
 
     for i in pop:
-        i.play_game(env, render=True)
+        i.play_game(env)
         assert i.fitness <= 0
+
+    print("max = ", max(pop, key=lambda p: p.fitness))
 
     es.tell(pop)
 
@@ -58,25 +60,26 @@ def test_generations():
     env = init_custom_env()
     obs = env.reset()
     n_action = env.action_space.n
-    agent = AgentNet(obs, n_action)
+    agent = AgentNet(get_state(obs), n_action)
 
     params = agent.get_params()
     d = len(params)
-    es = Canonical(d, n=15)
+    es = Canonical(d, n=150)
 
     for i in range(es.n_pop):
         es.population.append(AgentInd(env=env))
 
-    for i in range(3):
+    for i in range(7):
+        print("-------- Iteration ", i+1," --------")
         pop = es.ask()
-        env = init_custom_env(level=0)
+        #env = init_custom_env(level=0)
 
         for i in pop:
-            i.play_game(env, render=True)
+            i.play_game(env)
 
         es.tell(pop)
         es.log()
-        print("--------")
+        
 
     es.plot(data='mean')
 
