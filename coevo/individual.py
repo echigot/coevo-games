@@ -8,7 +8,7 @@ import random as rd
 
 
 class Individual:
-    nb_steps_max = 30
+    nb_steps_max = 10
 
     def __init__(self, genes):
         self.genes = genes
@@ -16,6 +16,7 @@ class Individual:
         self.done = False
         self.steps = 0
         self.age = 0
+        self.last_action = -1 
 
     @property
     def genes(self):
@@ -28,6 +29,7 @@ class Individual:
         self.age = 0
         self.steps = 0
         self.done = False
+        self.last_action = -1
         self.agent.set_params(new_genes)
 
     def __repr__(self):
@@ -49,8 +51,12 @@ class Individual:
         while((not self.done) and self.steps < Individual.nb_steps_max):
             #obs = np.random.randint(0,2,size=obs.shape)
             result = get_result(agent, obs)
+            if result == self.last_action:
+                self.done = True
+                break
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
+            self.last_action = result
             if render:
                 env.render()
             
@@ -98,10 +104,11 @@ class EnvInd(Individual):
     
 
 def fitness(indiv, env):
-    goal_location = get_object_location(env, 'exit')
-    avatar_location = get_object_location(env, 'avatar')
-    distance = np.linalg.norm(np.array(goal_location) - np.array(avatar_location))
-    return indiv.fitness*10 - distance
+    # goal_location = get_object_location(env, 'exit')
+    # avatar_location = get_object_location(env, 'avatar')
+    # distance = np.linalg.norm(np.array(goal_location) - np.array(avatar_location))
+    # return indiv.fitness*10 - distance
+    return indiv.fitness*10 + indiv.steps
     
 def get_result(agent, obs):
     #print("state ",get_state(obs))

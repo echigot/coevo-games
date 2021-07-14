@@ -27,11 +27,17 @@ class AgentNet(nn.Module):
         )
 
         #couche récurrente
-        self.fc_hidden = nn.LSTM(linear_flatten, 128)
-
         hidden_state = torch.rand(1, 1, 128)
         cell_state = torch.rand(1, 1, 128)
+
+        self.fc_hidden = nn.LSTM(linear_flatten, 128)
         self.hidden = (hidden_state, cell_state)
+
+        self.fc_hidden_sc = nn.LSTM(128, 128)
+        self.hidden_sc = (hidden_state, cell_state)
+
+        self.fc_hidden_th = nn.LSTM(128, 128)
+        self.hidden_th = (hidden_state, cell_state)
         #self.fc_hidden = nn.Linear(in_features=linear_flatten, out_features=128)
         
         # Output layer:
@@ -50,15 +56,22 @@ class AgentNet(nn.Module):
         # Rectified output from the final hidden layer
         #x = F.relu(self.fc_hidden(x))#, self.hx))
         x = x.unsqueeze(0)
-        x, self.hidden = self.fc_hidden(x, self.hidden)
+        #hx = torch.zeros(1, 1, 128)
+        y, self.hidden = self.fc_hidden(x, self.hidden)
+
+        #y, self.hidden_sc = self.fc_hidden_sc(y, self.hidden_sc)
+
+        #y, self.hidden_th = self.fc_hidden_th(y, self.hidden_th)
         #print("third ", x)
         # Returns the output from the fully-connected linear layer
 
-        x = self.output(x)
+        y = y.contiguous().view(-1, 128)
+
+        y = self.output(y)
         #print("last ", x)
 
         #print("params = ",self.get_params())
-        return x
+        return y
 
     def get_params(self):
         with torch.no_grad():

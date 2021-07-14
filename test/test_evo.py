@@ -7,6 +7,12 @@ from torch.functional import Tensor
 import copy as cp
 from coevo import AgentNet, get_state, Individual, fitness, Canonical, AgentInd, EnvInd
 
+
+np.random.seed(0)
+#implémenter zelda
+#map 1234
+#actions aléatoires
+
 def init_custom_env(pretty_mode=False, level=0):
     if pretty_mode:
         env = GymWrapper(yaml_file="simple_maze.yaml",
@@ -15,6 +21,8 @@ def init_custom_env(pretty_mode=False, level=0):
         env = GymWrapper(yaml_file="simple_maze.yaml", level=level)
     
     return env
+
+
 
 
 
@@ -28,7 +36,7 @@ def test_agent_es():
     params = agent.get_params()
     d = len(params)
 
-    es = Canonical(d, n=30)
+    es = Canonical(d)
     assert es.n_pop > 0 # population size
 
     for i in range(es.n_pop):
@@ -39,7 +47,7 @@ def test_agent_es():
 
     for i in pop:
         i.play_game(env)
-        assert i.fitness <= 0
+        assert i.fitness >= -15
 
     print("max = ", max(pop, key=lambda p: p.fitness))
 
@@ -55,6 +63,8 @@ def test_agent_es():
     for i in pop2:
         i.play_game(env)
 
+    print("max = ", max(pop2, key=lambda p: p.fitness))
+
 
 def test_generations():
     env = init_custom_env()
@@ -64,24 +74,51 @@ def test_generations():
 
     params = agent.get_params()
     d = len(params)
-    es = Canonical(d, n=150)
+    es = Canonical(d)
 
     for i in range(es.n_pop):
         es.population.append(AgentInd(env=env))
 
-    for i in range(7):
+
+    env = init_custom_env()
+    for i in range(10):
         print("-------- Iteration ", i+1," --------")
         pop = es.ask()
-        #env = init_custom_env(level=0)
-
+        
         for i in pop:
-            i.play_game(env)
+            i.play_game(env, render=True)
 
         es.tell(pop)
         es.log()
+    
+    print("max = ", max(pop, key=lambda p: p.fitness))
+
+    # env = init_custom_env()
+    # for i in range(0):
+    #     print("-------- Iteration ", i+1," --------")
+    #     pop = es.ask()
         
+    #     for i in pop:
+    #         i.play_game(env)
+
+    #     es.tell(pop)
+    #     es.log()
+        
+    # print("max = ", max(pop, key=lambda p: p.fitness))
+    # env = init_custom_env()
+    # for i in range(0):
+    #     print("-------- Iteration ", i+1," --------")
+    #     pop = es.ask()
+
+    #     for i in pop:
+    #         i.play_game(env, render=True)
+
+    #     es.tell(pop)
+    #     es.log()
+
+    # print("max = ", max(pop, key=lambda p: p.fitness))
 
     es.plot(data='mean')
 
-test_agent_es()
-#test_generations()
+#test_agent_es()
+test_generations()
