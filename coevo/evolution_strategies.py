@@ -108,7 +108,7 @@ class ES:
         else:
             raise
         plt.figure(figsize=(size*2, size))
-        plt.plot(self.evaluations, x, label = "Best")
+        plt.plot(self.evaluations, x, label = data)
         plt.yscale(yscale)
         plt.xlabel(f"Evaluations ({self.gen} gens)")
         plt.ylabel(f"{data} Fitness - {yscale} scale")

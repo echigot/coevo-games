@@ -8,7 +8,7 @@ import random as rd
 
 
 class Individual:
-    nb_steps_max = 10
+    nb_steps_max = 100
 
     def __init__(self, genes):
         self.genes = genes
@@ -41,19 +41,18 @@ class Individual:
     def do_action(self, result, env):
         obs_2, reward, done, info = env.step(result)
         self.done = done
-        self.fitness = reward+self.fitness
+        self.fitness = reward*10+self.fitness
         if (self.done):
+            #self.fitness = self.fitness + 50
             env.reset()
         return obs_2
 
     def play_one_game(self, agent, env, render=False):
         obs = env.reset()
         while((not self.done) and self.steps < Individual.nb_steps_max):
-            #obs = np.random.randint(0,2,size=obs.shape)
             result = get_result(agent, obs)
-            if result == self.last_action:
-                self.done = True
-                break
+            if result != self.last_action:
+                self.fitness = self.fitness +1
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
             self.last_action = result
@@ -71,14 +70,12 @@ class AgentInd(Individual):
 
         obs = env.reset()
         
-        self.agent = AgentNet(get_state(obs), env.action_space.n)
+        self.agent = AgentNet(get_state(obs), env.action_space)
 
         if genes is not None:
             self.genes = genes
             self.agent.set_params(genes)
         else:
-            #print(self.agent.get_params())
-            #self.agent.set_params(self.agent.get_params())
             self.genes = self.agent.get_params()
 
         super(AgentInd, self).__init__(self.genes)
@@ -108,13 +105,15 @@ def fitness(indiv, env):
     # avatar_location = get_object_location(env, 'avatar')
     # distance = np.linalg.norm(np.array(goal_location) - np.array(avatar_location))
     # return indiv.fitness*10 - distance
-    return indiv.fitness*10 + indiv.steps
+    return indiv.fitness
     
 def get_result(agent, obs):
     #print("state ",get_state(obs))
-    actions = agent(get_state(obs))
-    #print(actions.detach().numpy())
-    a = int(np.argmax(actions.detach().numpy()))
+    actions = agent(get_state(obs)).detach().numpy()
+    #print(actions)
+    action = int(np.argmax(actions[0][:2]))
+    direction = int(np.argmax(actions[0][2:]))
+    a = (action, direction)
     #print(a)
     return a
 

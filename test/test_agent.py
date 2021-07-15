@@ -37,14 +37,17 @@ def test_fitness_after_step():
     assert indiv.fitness == 0
 
     fit_init = fitness(indiv, env)
-    assert fit_init <= 0
-
-    obs = env.reset()
+    assert fit_init >=-15
 
     indiv.play_game(env)
 
     current_fit = fitness(indiv, env)
-    assert current_fit <= 0
+    assert current_fit >=-15
 
+def test_agent_zelda():
+    env = GymWrapper(yaml_file='simple_zelda.yaml', global_observer_type=gd.ObserverType.SPRITE_2D, player_observer_type=gd.ObserverType.SPRITE_2D)
+    env.reset()
+    indiv = AgentInd(env)
+    indiv.play_game(env, render=True)
 
-test_fitness_after_step()
+test_agent_zelda()

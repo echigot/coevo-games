@@ -4,6 +4,7 @@ import gym
 from griddly import GymWrapper, gd
 import yaml
 from yaml.loader import Loader
+import numpy as np
 
 
 def test_griddly():
@@ -25,5 +26,14 @@ def test_custom_env():
         if done:
             env.reset()
 
+def test_zelda_env():
+    env = gym.make('GDY-Zelda-v0')
+    #env = GymWrapper(yaml_file='simple_zelda.yaml')
+    env.reset()
 
-#test_custom_env()
+    for s in range(10):
+        action = env.action_space.sample()
+        obs, reward, done, info = env.step(action)
+        env.render()
+        if done:
+            env.reset()

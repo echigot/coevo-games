@@ -1,4 +1,5 @@
   
+from numpy.core.fromnumeric import shape
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -9,14 +10,15 @@ import gym
 
 
 class AgentNet(nn.Module):
-    def __init__(self, obs, num_actions):
+    def __init__(self, obs, action_space):
 
         super(AgentNet, self).__init__()
 
         in_channels = obs.shape[1]
+        self.n_out=np.sum(action_space.nvec[:])
 
         kernel_size = 3
-        linear_flatten = np.prod(obs.shape[1:])*kernel_size
+        linear_flatten = np.prod(obs.shape[1:])*kernel_size*4
 
         self.conv = nn.Sequential(
             nn.Conv2d(in_channels, 6, kernel_size, padding=1),
@@ -36,13 +38,13 @@ class AgentNet(nn.Module):
         self.fc_hidden_sc = nn.LSTM(128, 128)
         self.hidden_sc = (hidden_state, cell_state)
 
-        self.fc_hidden_th = nn.LSTM(128, 128)
-        self.hidden_th = (hidden_state, cell_state)
+        #self.fc_hidden_th = nn.LSTM(128, 128)
+        #self.hidden_th = (hidden_state, cell_state)
         #self.fc_hidden = nn.Linear(in_features=linear_flatten, out_features=128)
         
         # Output layer:
-        self.output = nn.Linear(in_features=128, out_features=num_actions)
-        self.n_out=num_actions
+        self.output = nn.Linear(in_features=128, out_features=self.n_out)
+        
 
 
     # As per implementation instructions according to pytorch, the forward function should be overwritten by all
@@ -85,4 +87,8 @@ class AgentNet(nn.Module):
 
 
 def get_state(s, device="cpu"):
-    return torch.tensor(s, device=device).unsqueeze(0).float()
+    frame = torch.zeros(s.shape[1], s.shape[2])
+    for i in range (s.shape[0]) :
+        frame = frame + s[i]*(i+1)
+
+    return frame.unsqueeze(0).unsqueeze(0).float()
