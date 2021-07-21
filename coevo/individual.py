@@ -1,3 +1,4 @@
+from matplotlib.pyplot import step
 from coevo.agent_net import AgentNet
 import gym
 from griddly import GymWrapper, gd
@@ -8,7 +9,7 @@ import random as rd
 
 
 class Individual:
-    nb_steps_max = 100
+    nb_steps_max = 200
 
     def __init__(self, genes):
         self.genes = genes
@@ -42,8 +43,9 @@ class Individual:
         obs_2, reward, done, info = env.step(result)
         self.done = done
         self.fitness = reward*10+self.fitness
+        #if self.fitness >= 5:
+        #    env.render()
         if (self.done):
-            #self.fitness = self.fitness + 50
             env.reset()
         return obs_2
 
@@ -52,7 +54,9 @@ class Individual:
         while((not self.done) and self.steps < Individual.nb_steps_max):
             result = get_result(agent, obs)
             if result != self.last_action:
-                self.fitness = self.fitness +1
+                self.fitness = self.fitness + 1
+            elif self.steps//5 >= self.fitness  and self.steps >= 25:
+                break
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
             self.last_action = result
@@ -67,14 +71,14 @@ class AgentInd(Individual):
     def __init__(self, env=None, genes=None):
         if env is None:
             env = GymWrapper(yaml_file="simple_maze.yaml", level=0)
-
+            
+        self.avatar_init_location = get_object_location(env, 'avatar')
         obs = env.reset()
         
         self.agent = AgentNet(get_state(obs), env.action_space)
 
         if genes is not None:
             self.genes = genes
-            self.agent.set_params(genes)
         else:
             self.genes = self.agent.get_params()
 
@@ -101,11 +105,9 @@ class EnvInd(Individual):
     
 
 def fitness(indiv, env):
-    # goal_location = get_object_location(env, 'exit')
-    # avatar_location = get_object_location(env, 'avatar')
-    # distance = np.linalg.norm(np.array(goal_location) - np.array(avatar_location))
-    # return indiv.fitness*10 - distance
-    return indiv.fitness
+    avatar_location = get_object_location(env, 'avatar')
+    distance = np.abs(np.linalg.norm(np.array(indiv.avatar_init_location) - np.array(avatar_location)))
+    return indiv.fitness # + distance//2
     
 def get_result(agent, obs):
     #print("state ",get_state(obs))

@@ -1,3 +1,4 @@
+from numpy import float32
 from .evolution_strategies import *
 
 
@@ -24,7 +25,7 @@ class Canonical(ES):
 
         # Compute weights for weighted mean of the top self.n_parents offsprings
         # (parents for the next generation).
-        self.w = np.array([np.log(self.n_parents + 0.5) - np.log(i) for i in range(1, self.n_parents + 1)])
+        self.w = np.array([np.log(self.n_parents + 0.5) - np.log(i) for i in range(1, self.n_parents + 1)], dtype=float32)
         self.w /= np.sum(self.w)
 
         # Noise adaptation stuff.
@@ -34,7 +35,7 @@ class Canonical(ES):
         self.c_sigma *= self.c_sigma_factor
         self.const_1 = np.sqrt(self.u_w * self.c_sigma * (2 - self.c_sigma))
 
-        self.s = self.rng.standard_normal((self.d, self.n_pop))
+        self.s = self.rng.standard_normal((self.d, self.n_pop), dtype=float32)
 
         
     def __repr__(self):
@@ -72,7 +73,7 @@ class Canonical(ES):
         # self.p_sigma = (1 - self.c_sigma) * self.p_sigma + self.const_1 * step
         # self.sigma = self.sigma * np.exp((self.c_sigma / 2) * (np.sum(np.square(self.p_sigma)) / self.d - 1))
         
-        self.s = self.rng.standard_normal((self.d, self.n_pop))
+        self.s = self.rng.standard_normal((self.d, self.n_pop),dtype=float32)
 
         self.get_hof()
 

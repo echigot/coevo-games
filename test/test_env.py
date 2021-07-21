@@ -27,8 +27,8 @@ def test_custom_env():
             env.reset()
 
 def test_zelda_env():
-    env = gym.make('GDY-Zelda-v0')
-    #env = GymWrapper(yaml_file='simple_zelda.yaml')
+    #env = gym.make('GDY-Zelda-v0')
+    env = GymWrapper(yaml_file='simple_zelda.yaml')
     env.reset()
 
     for s in range(10):
