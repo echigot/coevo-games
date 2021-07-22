@@ -30,7 +30,7 @@ class Individual:
         self.age = 0
         self.steps = 0
         self.done = False
-        self.last_action = -1
+        self.last_action = 0
         self.agent.set_params(new_genes)
 
     def __repr__(self):
@@ -42,9 +42,7 @@ class Individual:
     def do_action(self, result, env):
         obs_2, reward, done, info = env.step(result)
         self.done = done
-        self.fitness = reward*10+self.fitness
-        #if self.fitness >= 5:
-        #    env.render()
+        self.fitness = reward*50 + self.fitness
         if (self.done):
             env.reset()
         return obs_2
@@ -55,7 +53,7 @@ class Individual:
             result = get_result(agent, obs)
             if result != self.last_action:
                 self.fitness = self.fitness + 1
-            elif self.steps//5 >= self.fitness  and self.steps >= 25:
+            if self.steps//5 >= self.fitness  and self.steps >= 25:
                 break
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
@@ -64,6 +62,7 @@ class Individual:
                 env.render()
             
         self.fitness = fitness(self, env)
+        env.close()
 
 
 class AgentInd(Individual):
@@ -107,7 +106,7 @@ class EnvInd(Individual):
 def fitness(indiv, env):
     avatar_location = get_object_location(env, 'avatar')
     distance = np.abs(np.linalg.norm(np.array(indiv.avatar_init_location) - np.array(avatar_location)))
-    return indiv.fitness # + distance//2
+    return indiv.fitness
     
 def get_result(agent, obs):
     #print("state ",get_state(obs))

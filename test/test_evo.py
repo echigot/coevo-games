@@ -9,7 +9,7 @@ import copy as cp
 from coevo import AgentNet, get_state, Individual, fitness, Canonical, AgentInd, EnvInd
 
 
-np.random.seed(0)
+#np.random.seed(0)
 #actions aléatoires
 
 def init_custom_env(pretty_mode=False, level=0, game="simple_maze"):
@@ -136,10 +136,7 @@ def test_generation_zelda():
 
     params = agent.get_params()
     d = len(params)
-    es = Canonical(d)
 
-
-    env = init_custom_env(game="simple_zelda")
     i=0
     sum=0
     render=False
@@ -147,15 +144,16 @@ def test_generation_zelda():
     best_ind = None
     best_fitness = 0
 
-    while (i<50):
+    while (i<200):
         print("-------- Iteration ", i+1," --------")
         if (i==0):
+            env.close()
             env = init_custom_env(game="simple_zelda")
             es = Canonical(d)
             for j in range(es.n_pop):
                 es.population.append(AgentInd(env=env))
 
-        if (i>=4 and sum < 7):
+        if (i>=5 and sum < 8) or (i==5 and sum == 57):
             i=0
             sum=0
             continue
@@ -179,6 +177,7 @@ def test_generation_zelda():
     
     torch.save(best_ind, "best_agent")
     es.plot(data='mean')
+    env.close()
     es = None
     env = None
     pop = None
@@ -216,8 +215,8 @@ def load_best_agent():
 #test_agent_es()
 #test_generations()
 #test_evolution_zelda()
-#test_generation_zelda()
-load_best_agent()
+test_generation_zelda()
+#load_best_agent()
 
 #test_save_agent()
 #test_load_agent()

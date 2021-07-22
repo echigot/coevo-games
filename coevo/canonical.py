@@ -1,4 +1,4 @@
-from numpy import float32
+from numpy import float16, float32
 from .evolution_strategies import *
 
 
@@ -57,7 +57,7 @@ class Canonical(ES):
         fitnesses = [- i.fitness for i in self.population]
         idx = np.argsort(fitnesses) # indices from highest fitness to lowest
 
-        step = np.zeros(self.d)
+        step = np.zeros(self.d, dtype=float16)
         
         # print([i.fitness for i in self.population])
         # print([self.population[i].fitness for i in idx])
