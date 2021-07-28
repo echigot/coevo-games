@@ -44,8 +44,7 @@ class Canonical(ES):
     def populate(self):
         for i in range(self.n_pop):
             new_genes = self.mu + self.sigma * self.s[:, i]
-            self.population[i].genes = new_genes
-            del new_genes
+            self.population[i] = AgentInd(env=self.population[i].env, genes=new_genes)
         return self
 
     def back_random(self, genes_after):

@@ -1,3 +1,4 @@
+from coevo.individual import AgentInd
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -134,7 +135,7 @@ class ES:
     def populate(self):
         for i in range(self.n_pop):
             new_genes = self.rng.standard_normal(self.d, dtype=np.float32)
-            self.population[i].genes = new_genes 
+            self.population[i].genes = new_genes
         return self
     
     def update(self):

@@ -29,9 +29,7 @@ class Individual:
         self.steps = 0
         self.done = False
         self.last_action = [0,0]
-        if (self.age > 1):
-            self.agent.set_params(new_genes)
-            pass
+
     
 
     def __repr__(self):
@@ -69,17 +67,21 @@ class Individual:
 
 class AgentInd(Individual):
 
-    def __init__(self, env=None, genes=None):
+    def __init__(self, env=None, genes=None, age=1):
         if env is None:
-            env = GymWrapper(yaml_file="simple_maze.yaml", level=0)
+            self.env = GymWrapper(yaml_file="simple_zelda.yaml", level=0)
+        else:
+            self.env=env
             
         self.avatar_init_location = get_object_location(env, 'avatar')
-        obs = env.reset()
+        obs = self.env.reset()
         
         self.agent = AgentNet(get_state(obs), env.action_space)
 
         if genes is None:
             genes = self.agent.get_params()
+        elif age > 0:
+            self.agent.set_params(genes)
 
         super(AgentInd, self).__init__(genes)
 
