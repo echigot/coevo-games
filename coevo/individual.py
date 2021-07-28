@@ -9,15 +9,13 @@ import random as rd
 
 
 class Individual:
-    nb_steps_max = 200
+    nb_steps_max = 130
+    dic_actions = {}
 
     def __init__(self, genes):
+        self.age = -1
         self.genes = genes
-        self.fitness = 0
-        self.done = False
-        self.steps = 0
-        self.age = 0
-        self.last_action = -1 
+
 
     @property
     def genes(self):
@@ -27,11 +25,14 @@ class Individual:
     def genes(self, new_genes):
         self._genes = new_genes
         self.fitness = 0
-        self.age = 0
+        self.age = self.age + 1
         self.steps = 0
         self.done = False
-        self.last_action = 0
-        self.agent.set_params(new_genes)
+        self.last_action = [0,0]
+        if (self.age > 1):
+            self.agent.set_params(new_genes)
+            pass
+    
 
     def __repr__(self):
         return f"ES Indiv (fitness={self.fitness})"
@@ -40,21 +41,20 @@ class Individual:
         return self.__repr__()
 
     def do_action(self, result, env):
-        obs_2, reward, done, info = env.step(result)
+        obs_2, reward, done, _ = env.step(result)
         self.done = done
-        self.fitness = reward*50 + self.fitness
+        self.fitness = reward*20 + self.fitness
         if (self.done):
-            env.reset()
+            obs_2 = env.reset()
         return obs_2
 
     def play_one_game(self, agent, env, render=False):
         obs = env.reset()
+
         while((not self.done) and self.steps < Individual.nb_steps_max):
             result = get_result(agent, obs)
-            if result != self.last_action:
+            if result != self.last_action and result in Individual.dic_actions:
                 self.fitness = self.fitness + 1
-            if self.steps//5 >= self.fitness  and self.steps >= 25:
-                break
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
             self.last_action = result
@@ -63,6 +63,8 @@ class Individual:
             
         self.fitness = fitness(self, env)
         env.close()
+
+    
 
 
 class AgentInd(Individual):
@@ -76,12 +78,10 @@ class AgentInd(Individual):
         
         self.agent = AgentNet(get_state(obs), env.action_space)
 
-        if genes is not None:
-            self.genes = genes
-        else:
-            self.genes = self.agent.get_params()
+        if genes is None:
+            genes = self.agent.get_params()
 
-        super(AgentInd, self).__init__(self.genes)
+        super(AgentInd, self).__init__(genes)
 
     def play_game(self, env, render=False):
         self.play_one_game(self.agent, env, render)
@@ -104,8 +104,8 @@ class EnvInd(Individual):
     
 
 def fitness(indiv, env):
-    avatar_location = get_object_location(env, 'avatar')
-    distance = np.abs(np.linalg.norm(np.array(indiv.avatar_init_location) - np.array(avatar_location)))
+    #avatar_location = get_object_location(env, 'avatar')
+    #distance = np.abs(np.linalg.norm(np.array(indiv.avatar_init_location) - np.array(avatar_location)))
     return indiv.fitness
     
 def get_result(agent, obs):
@@ -124,3 +124,14 @@ def get_object_location(env, object):
             return i['Location']
     
     return None
+
+
+def define_action_space(env):
+    env.reset()
+    for s in range(1000):
+        action = tuple(env.action_space.sample())
+        if (action in Individual.dic_actions):
+            Individual.dic_actions[action] = Individual.dic_actions[action] +1
+        else:
+            Individual.dic_actions[action] = 1
+

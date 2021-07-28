@@ -26,6 +26,16 @@ Environment:
       wwwwwwwwwwwww
     - |
       wwwwwwwwwwwww
+      w...........w
+      w...........w
+      w.....A.....w
+      w.+.........w
+      w...........w
+      w......3....w
+      w.g.........w
+      wwwwwwwwwwwww
+    - |
+      wwwwwwwwwwwww
       w.....+..+g.w
       w.+.w.g.....w
       w.....Ag..3.w
@@ -179,9 +189,15 @@ Actions:
           Commands:
             - spawn: attack_fire
         Dst:
-          Object: [spider, _empty]
+          Object: spider
           Commands:
             - remove: true
+      - Src:
+          Object: avatar
+          Commands:
+            - spawn: attack_fire
+        Dst:
+          Object: _empty
 Objects:
   - Name: avatar
     Z: 3

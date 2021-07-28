@@ -4,6 +4,9 @@ import pytest
 from griddly import GymWrapperFactory, gd
 from griddly.util.environment_generator_generator import EnvironmentGeneratorGenerator
 
+import matplotlib.pyplot as plt
+from coevo import AgentInd
+
 
 @pytest.fixture
 def test_name(request):
@@ -27,13 +30,13 @@ def build_generator(test_name, yaml_file):
 
 def test_spider_nest_generator(test_name):
 
-    yaml_file = 'Single-Player/GVGAI/spider-nest.yaml'
+    yaml_file = 'simple_zelda.yaml'
 
     for i in range(10):
         genv = build_generator(test_name+f'{i}', yaml_file)
 
-        # Place 10 Random Objects
-        for i in range(1000):
+        #Place 10 Random Objects
+        for j in range(10):
             action = genv.action_space.sample()
             obs, reward, done, info = genv.step(action)
 
@@ -42,5 +45,16 @@ def test_spider_nest_generator(test_name):
 
             assert player_ascii_string == global_ascii_string
 
+    
+#test_spider_nest_generator("Zelda")
 
-test_spider_nest_generator("truc")
+env = build_generator('Zelda0', 'simple_zelda.yaml')
+obs = env.reset()
+for i in range(100):
+    action = env.action_space.sample()
+    env.step(action)
+
+
+env.reset()
+indiv = AgentInd(env)
+indiv.play_game(env, render=True)

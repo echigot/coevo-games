@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from torch.functional import Tensor
 import copy as cp
-from coevo import AgentNet, get_state, Individual, fitness, Canonical, AgentInd, EnvInd
+from coevo import AgentNet, get_state, Individual, fitness, Canonical, AgentInd, EnvInd, define_action_space
 
 
 #np.random.seed(0)
@@ -131,6 +131,7 @@ def test_evolution_zelda():
 
 def test_generation_zelda():
     env = init_custom_env(game="simple_zelda")
+    define_action_space(env)
     obs = env.reset()
     agent = AgentNet(get_state(obs), env.action_space)
 
@@ -139,12 +140,11 @@ def test_generation_zelda():
 
     i=0
     sum=0
-    render=False
 
     best_ind = None
     best_fitness = 0
 
-    while (i<200):
+    while (i<50):
         print("-------- Iteration ", i+1," --------")
         if (i==0):
             env.close()
@@ -153,7 +153,7 @@ def test_generation_zelda():
             for j in range(es.n_pop):
                 es.population.append(AgentInd(env=env))
 
-        if (i>=5 and sum < 8) or (i==5 and sum == 57):
+        if (i>=5 and sum < 8):
             i=0
             sum=0
             continue
@@ -161,10 +161,9 @@ def test_generation_zelda():
         pop = es.ask()
         
         for k in pop:
-            k.play_game(env, render=render)
+            k.play_game(env, render=False)
 
         es.tell(pop)
-        es.log()
         maximum = max(pop, key=lambda p: p.fitness)
         if maximum.fitness > best_fitness:
             best_fitness = maximum.fitness
@@ -175,7 +174,8 @@ def test_generation_zelda():
 
         i = i+1
     
-    torch.save(best_ind, "best_agent")
+    torch.save(best_ind, "best_agent2")
+    print("Best fitness = ", best_fitness)
     es.plot(data='mean')
     env.close()
     es = None
@@ -201,10 +201,11 @@ def test_load_agent():
 
 def load_best_agent():
     env = init_custom_env(game="simple_zelda")
+    define_action_space(env)
     obs = env.reset()
     agent = AgentNet(get_state(obs), env.action_space)
 
-    agent.load_state_dict(torch.load("best_agent"))
+    agent.load_state_dict(torch.load("best_agent2"))
 
     indiv = AgentInd(env=env, genes=agent.get_params())
     indiv.play_game(env, render=True)

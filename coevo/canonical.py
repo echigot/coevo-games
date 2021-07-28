@@ -1,4 +1,4 @@
-from numpy import float16, float32
+from numpy import float16, float32, zeros
 from .evolution_strategies import *
 
 
@@ -19,7 +19,7 @@ class Canonical(ES):
         self.c_sigma_factor = 1
 
         # Current solution (The one that we report).
-        self.mu = self.rng.random(self.d)
+        self.mu = self.rng.random(self.d, dtype=float32)
         # Computed update, step in parameter space computed in each iteration.
         self.step = 0
 
@@ -45,14 +45,13 @@ class Canonical(ES):
         for i in range(self.n_pop):
             new_genes = self.mu + self.sigma * self.s[:, i]
             self.population[i].genes = new_genes
+            del new_genes
         return self
 
     def back_random(self, genes_after):
         return (genes_after - self.mu)/self.sigma    
     
     def update(self):
-        d =len(self.population[0].genes)
-        n = self.n_pop
         
         fitnesses = [- i.fitness for i in self.population]
         idx = np.argsort(fitnesses) # indices from highest fitness to lowest
@@ -73,6 +72,7 @@ class Canonical(ES):
         # self.p_sigma = (1 - self.c_sigma) * self.p_sigma + self.const_1 * step
         # self.sigma = self.sigma * np.exp((self.c_sigma / 2) * (np.sum(np.square(self.p_sigma)) / self.d - 1))
         
+        self.s = None
         self.s = self.rng.standard_normal((self.d, self.n_pop),dtype=float32)
 
         self.get_hof()

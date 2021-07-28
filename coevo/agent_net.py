@@ -35,8 +35,8 @@ class AgentNet(nn.Module):
         self.fc_hidden = nn.LSTM(linear_flatten, 128)
         self.hidden = (hidden_state, cell_state)
 
-        self.fc_hidden_sc = nn.LSTM(128, 128)
-        self.hidden_sc = (hidden_state, cell_state)
+        #self.fc_hidden_sc = nn.LSTM(128, 128)
+        #self.hidden_sc = (hidden_state, cell_state)
 
         #self.fc_hidden_th = nn.LSTM(128, 128)
         #self.hidden_th = (hidden_state, cell_state)
@@ -60,7 +60,6 @@ class AgentNet(nn.Module):
         x = x.unsqueeze(0)
         #hx = torch.zeros(1, 1, 128)
         y, self.hidden = self.fc_hidden(x, self.hidden)
-
         #y, self.hidden_sc = self.fc_hidden_sc(y, self.hidden_sc)
 
         #y, self.hidden_th = self.fc_hidden_th(y, self.hidden_th)
@@ -77,13 +76,13 @@ class AgentNet(nn.Module):
 
     def get_params(self):
         with torch.no_grad():
-            params = self.parameters()
-            vec = torch.nn.utils.parameters_to_vector(params)
+            #params = self.parameters()
+            vec = torch.nn.utils.parameters_to_vector(self.parameters())
         return vec.cpu().numpy()
 
     def set_params(self, params):
-        a = torch.tensor(params).float()
-        torch.nn.utils.vector_to_parameters(a, self.parameters())
+        a = self.parameters()
+        torch.nn.utils.vector_to_parameters(torch.tensor(params), a)
 
 
 def get_state(s, device="cpu"):
