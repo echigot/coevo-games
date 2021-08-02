@@ -153,10 +153,10 @@ def test_generation_zelda():
             for j in range(es.n_pop):
                 es.population.append(AgentInd(env=env, age=0))
 
-        if (i>=5 and sum < 8):
-            i=0
-            sum=0
-            continue
+        # if (i>=5 and sum < 8):
+        #     i=0
+        #     sum=0
+        #     continue
 
         pop = es.ask()
         
@@ -221,8 +221,8 @@ def load_best_agent():
 #test_agent_es()
 #test_generations()
 #test_evolution_zelda()
-#test_generation_zelda()
+test_generation_zelda()
 #load_best_agent()
 
 #test_save_agent()
-test_load_agent(30)
+#test_load_agent(30)

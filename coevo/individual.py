@@ -1,3 +1,4 @@
+from coevo.env_grid import EnvGrid
 from matplotlib.pyplot import step
 from coevo.agent_net import AgentNet
 import gym
@@ -13,7 +14,7 @@ class Individual:
     dic_actions = {}
 
     def __init__(self, genes):
-        self.age = -1
+        self.age = 0
         self.genes = genes
 
 
@@ -25,12 +26,10 @@ class Individual:
     def genes(self, new_genes):
         self._genes = new_genes
         self.fitness = 0
-        self.age = self.age + 1
+        self.age = 0
         self.steps = 0
         self.done = False
         self.last_action = [0,0]
-
-    
 
     def __repr__(self):
         return f"ES Indiv (fitness={self.fitness})"
@@ -41,7 +40,7 @@ class Individual:
     def do_action(self, result, env):
         obs_2, reward, done, _ = env.step(result)
         self.done = done
-        self.fitness = reward*20 + self.fitness
+        self.fitness = reward*30 + self.fitness
         if (self.done):
             obs_2 = env.reset()
         return obs_2
@@ -51,8 +50,10 @@ class Individual:
 
         while((not self.done) and self.steps < Individual.nb_steps_max):
             result = get_result(agent, obs)
-            if result != self.last_action and result in Individual.dic_actions:
-                self.fitness = self.fitness + 1
+            # if result != self.last_action and result in Individual.dic_actions:
+            #     self.fitness = self.fitness + 1
+            #     if result[0] != 1:
+            #         self.fitness = self.fitness +1
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
             self.last_action = result
@@ -61,6 +62,8 @@ class Individual:
             
         self.fitness = fitness(self, env)
         env.close()
+
+    
 
     
 
@@ -80,7 +83,7 @@ class AgentInd(Individual):
 
         if genes is None:
             genes = self.agent.get_params()
-        elif age > 0:
+        else:
             self.agent.set_params(genes)
 
         super(AgentInd, self).__init__(genes)
@@ -92,23 +95,42 @@ class AgentInd(Individual):
 
 
 class EnvInd(Individual):
+    height = 100
+    width = 300
 
     def __init__(self, genes=None):
-        if genes is None:
-            # TODO: create genes
-            genes = np.random.rand(1)
-        super(EnvInd, self).__init__(genes)
+        
         self.env = None
+        self.fitness = 0
+        self.genes = genes
+        self.age = 0
+        self.grid = EnvGrid(EnvInd.width, EnvInd.height)
+
+        if genes is None:
+            genes = self.grid.get_params()
+        else:
+            self.grid.set_params(genes)
+        
+        super(EnvInd, self).__init__(genes)
+
 
     def play_game(self, agent):
         self.play_one_game(agent, self.env)
+
+    
+    
             
     
 
 def fitness(indiv, env):
     #avatar_location = get_object_location(env, 'avatar')
     #distance = np.abs(np.linalg.norm(np.array(indiv.avatar_init_location) - np.array(avatar_location)))
-    return indiv.fitness
+    fitness = 0
+    if indiv.fitness > 0:
+        fitness = 2 - indiv.steps/Individual.nb_steps_max
+    elif indiv.fitness < 0:
+        fitness = indiv.steps/Individual.nb_steps_max - 2
+    return fitness
     
 def get_result(agent, obs):
     #print("state ",get_state(obs))

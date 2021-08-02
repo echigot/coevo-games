@@ -34,6 +34,5 @@ def test_zelda_env():
     for s in range(10):
         action = env.action_space.sample()
         obs, reward, done, info = env.step(action)
-        env.render()
         if done:
             env.reset()

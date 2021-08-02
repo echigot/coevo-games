@@ -1,3 +1,4 @@
+from coevo.individual import EnvInd
 import gym
 import pytest
 
@@ -45,8 +46,6 @@ def test_spider_nest_generator(test_name):
 
             assert player_ascii_string == global_ascii_string
 
-    
-#test_spider_nest_generator("Zelda")
 
 env = build_generator('Zelda0', 'simple_zelda.yaml')
 obs = env.reset()
@@ -58,3 +57,8 @@ for i in range(100):
 env.reset()
 indiv = AgentInd(env)
 indiv.play_game(env, render=True)
+
+
+def test_gen_map():
+
+    env_ind = EnvInd()
