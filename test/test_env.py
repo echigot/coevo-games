@@ -29,10 +29,15 @@ def test_custom_env():
 def test_zelda_env():
     #env = gym.make('GDY-Zelda-v0')
     env = GymWrapper(yaml_file='simple_zelda.yaml')
+    breakpoint()
     env.reset()
+
 
     for s in range(10):
         action = env.action_space.sample()
         obs, reward, done, info = env.step(action)
         if done:
             env.reset()
+
+
+test_zelda_env()

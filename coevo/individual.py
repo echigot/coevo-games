@@ -45,8 +45,11 @@ class Individual:
             obs_2 = env.reset()
         return obs_2
 
-    def play_one_game(self, agent, env, render=False):
-        obs = env.reset()
+    def play_one_game(self, agent, env, render=False, level_string=None):
+        if level_string is None:
+            obs = env.reset()
+        else:
+            obs = self.env.reset(level_string=level_string)
 
         while((not self.done) and self.steps < Individual.nb_steps_max):
             result = get_result(agent, obs)
@@ -100,27 +103,50 @@ class EnvInd(Individual):
 
     def __init__(self, genes=None):
         
-        self.env = None
+        self.env = GymWrapper(yaml_file='simple_zelda.yaml')
         self.fitness = 0
         self.genes = genes
         self.age = 0
-        self.grid = EnvGrid(EnvInd.width, EnvInd.height)
+        self.CA = EnvGrid(EnvInd.width, EnvInd.height, 7)
 
         if genes is None:
-            genes = self.grid.get_params()
+            genes = self.CA.get_params()
         else:
-            self.grid.set_params(genes)
+            self.CA.set_params(genes)
         
         super(EnvInd, self).__init__(genes)
 
 
     def play_game(self, agent):
-        self.play_one_game(agent, self.env)
+        self.play_one_game(agent, self.env, self.generate_env())
 
     
+    def generate_env(self):
+        level_string = ''
+        for i in range(EnvInd.width):
+            for j in range(EnvInd.height):
+                block = self.CA.grid[i][j]
+                level_string+=match_block(block).decode().ljust()
+            level_string += '\n'
+        
+        return level_string
+
+    def fitness_env(self):
+        
+        pass
+
     
+def match_block(x):
+    return {
+        0:'',
+        1:'A',
+        2:'x',
+        3:'+',
+        4:'g',
+        5:'3',
+        6:'w',
+    }[x]
             
-    
 
 def fitness(indiv, env):
     #avatar_location = get_object_location(env, 'avatar')
