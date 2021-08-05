@@ -6,7 +6,7 @@ import numpy as np
 import torch
 from torch.functional import Tensor
 import copy as cp
-from coevo import AgentNet, get_state, Individual, fitness, Canonical, AgentInd, EnvInd, define_action_space
+from coevo import AgentNet, get_state, Individual, Canonical, AgentInd, EnvInd, define_action_space
 
 
 #np.random.seed(0)
@@ -36,13 +36,13 @@ def test_agent_es():
     assert es.n_pop > 0 # population size
 
     for i in range(es.n_pop):
-        es.population.append(AgentInd(env=env))
+        es.population.append(AgentInd(env))
 
     pop = es.ask()
-    orig_pop = cp.deepcopy(pop)
+    orig_pop = cp.copy(pop)
 
     for i in pop:
-        i.play_game(env, render = True)
+        i.play_game(env, render = False)
         assert i.fitness >= -15
 
     print("max = ", max(pop, key=lambda p: p.fitness))
@@ -65,7 +65,7 @@ def test_agent_es():
 def test_generations():
     env = init_custom_env()
     obs = env.reset()
-    n_action = env.action_space.n
+    n_action = env.action_space
     agent = AgentNet(get_state(obs), n_action)
 
     params = agent.get_params()
@@ -73,23 +73,21 @@ def test_generations():
     es = Canonical(d)
 
     for i in range(es.n_pop):
-        es.population.append(AgentInd(env=env))
+        es.population.append(AgentInd(env))
 
-
-    env = init_custom_env()
     for i in range(3):
         print("-------- Iteration ", i+1," --------")
         pop = es.ask()
         
         for i in pop:
-            i.play_game(env, render=True)
+            i.play_game(env, render=False)
 
         es.tell(pop)
         es.log()
     
     print("max = ", max(pop, key=lambda p: p.fitness))
 
-    es.plot(data='mean')
+    #es.plot(data='mean')
 
 
 def test_evolution_zelda():
@@ -107,11 +105,11 @@ def test_evolution_zelda():
         es.population.append(AgentInd(env=env))
 
     pop = es.ask()
-    orig_pop = cp.deepcopy(pop)
+    orig_pop = cp.copy(pop)
 
     for i in pop:
-        i.play_game(env, render = True)
-        assert i.fitness >= -15
+        i.play_game(env, render = False)
+        assert i.fitness <= AgentInd.nb_steps_max + 30
 
     print("max = ", max(pop, key=lambda p: p.fitness))
 
@@ -126,8 +124,6 @@ def test_evolution_zelda():
     
     for i in pop2:
         i.play_game(env)
-
-    print("max = ", max(pop2, key=lambda p: p.fitness))
 
 def test_generation_zelda():
     env = init_custom_env(game="simple_zelda")
@@ -144,7 +140,7 @@ def test_generation_zelda():
     best_ind = None
     best_fitness = 0
 
-    while (i<300):
+    while (i<10):
         print("-------- Iteration ", i+1," --------")
         if (i==0):
             env.close()
@@ -152,11 +148,6 @@ def test_generation_zelda():
             es = Canonical(d)
             for j in range(es.n_pop):
                 es.population.append(AgentInd(env=env, age=0))
-
-        # if (i>=5 and sum < 8):
-        #     i=0
-        #     sum=0
-        #     continue
 
         pop = es.ask()
         
@@ -167,7 +158,7 @@ def test_generation_zelda():
         maximum = max(pop, key=lambda p: p.fitness)
         if maximum.fitness > best_fitness:
             best_fitness = maximum.fitness
-            best_ind = cp.deepcopy(maximum.agent.state_dict())
+            best_ind = cp.copy(maximum.agent.state_dict())
             
         sum = sum + maximum.fitness
         print("max = ", maximum)
@@ -178,12 +169,9 @@ def test_generation_zelda():
         torch.save(pop[i].agent.state_dict(), "last_agents/last_agent"+str(i))
     
     torch.save(best_ind, "best_agent2")
-    print("Best fitness = ", best_fitness)
-    es.plot(data='mean')
+    #print("Best fitness = ", best_fitness)
+    #es.plot(data='mean')
     env.close()
-    es = None
-    env = None
-    pop = None
 
 def test_save_agent():
     env = init_custom_env(game="simple_zelda")
@@ -192,7 +180,7 @@ def test_save_agent():
 
     torch.save(agent.state_dict(), "test_save")
 
-def test_load_agent(number):
+def test_load_agent(number=5):
     env = init_custom_env(game="simple_zelda")
     define_action_space(env)
     obs = env.reset()
@@ -201,8 +189,7 @@ def test_load_agent(number):
     agent.load_state_dict(torch.load("last_agents/last_agent"+str(number)))
 
     indiv = AgentInd(env=env, genes=agent.get_params())
-    indiv.play_game(env, render=True)
-    print(indiv.fitness)
+    indiv.play_game(env, render=False)
 
 def load_best_agent():
     env = init_custom_env(game="simple_zelda")
@@ -213,7 +200,7 @@ def load_best_agent():
     agent.load_state_dict(torch.load("best_agent2"))
 
     indiv = AgentInd(env=env, genes=agent.get_params())
-    indiv.play_game(env, render=True)
+    indiv.play_game(env, render=False)
     print(indiv.fitness)
 
 
@@ -221,7 +208,7 @@ def load_best_agent():
 #test_agent_es()
 #test_generations()
 #test_evolution_zelda()
-test_generation_zelda()
+#test_generation_zelda()
 #load_best_agent()
 
 #test_save_agent()

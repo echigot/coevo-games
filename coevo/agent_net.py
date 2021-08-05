@@ -1,4 +1,5 @@
   
+from gym.spaces.discrete import Discrete
 from numpy.core.fromnumeric import shape
 import torch
 import torch.nn as nn
@@ -6,7 +7,7 @@ import torch.nn.functional as F
 from torch.nn.modules.rnn import LSTM
 import torch.optim
 import numpy as np
-import gym
+from gym import spaces
 
 
 class AgentNet(nn.Module):
@@ -15,7 +16,13 @@ class AgentNet(nn.Module):
         super(AgentNet, self).__init__()
 
         in_channels = obs.shape[1]
-        self.n_out=np.sum(action_space.nvec[:])
+        
+        if (isinstance(action_space, int)):
+            self.n_out = action_space
+        elif (isinstance(action_space, Discrete)):
+            self.n_out = action_space.n
+        else:
+            self.n_out=np.sum(action_space.nvec[:])
 
         kernel_size = 3
         linear_flatten = np.prod(obs.shape[1:])*kernel_size*4

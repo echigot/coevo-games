@@ -5,17 +5,17 @@ import gym
 from griddly import GymWrapper, gd
 import numpy as np
 from torch.functional import Tensor
-from coevo import AgentNet, get_state, Individual, fitness
+from coevo import AgentNet, get_state, Individual
 
 def test_nn_creation():
     env = gym.make('GDY-Labyrinth-v0')
     obs = env.reset()
     n_action = env.action_space.n
-    agent = AgentNet(obs, n_action)
+    agent = AgentNet(get_state(obs), n_action)
 
-    result = agent.forward(get_state(obs))
+    result = agent(get_state(obs)).detach().numpy().flatten()
 
-    assert Tensor.size(result)[1] == n_action
+    assert len(result) == n_action
 
 def test_fitness():
     env = gym.make('GDY-Labyrinth-v0')  
@@ -26,7 +26,7 @@ def test_fitness():
     assert np.all(indiv.genes == indiv.agent.get_params())
     assert indiv.done == False
 
-    fit = fitness(indiv, env)
+    fit = indiv.compute_fitness()
 
     assert fit <= 0
 
@@ -36,18 +36,18 @@ def test_fitness_after_step():
     indiv = AgentInd(env)
     assert indiv.fitness == 0
 
-    fit_init = fitness(indiv, env)
+    fit_init = indiv.compute_fitness()
     assert fit_init >=-15
 
     indiv.play_game(env)
 
-    current_fit = fitness(indiv, env)
+    current_fit = indiv.compute_fitness()
     assert current_fit >=-15
 
 def test_agent_zelda():
     env = GymWrapper(yaml_file='simple_zelda.yaml', global_observer_type=gd.ObserverType.SPRITE_2D, player_observer_type=gd.ObserverType.SPRITE_2D)
     env.reset()
     indiv = AgentInd(env)
-    indiv.play_game(env, render=True)
+    indiv.play_game(env)
 
-test_agent_zelda()
+    assert indiv.fitness <= AgentInd.nb_steps_max + 30

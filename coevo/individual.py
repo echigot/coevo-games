@@ -10,7 +10,7 @@ import random as rd
 
 
 class Individual:
-    nb_steps_max = 130
+    nb_steps_max = 200
     dic_actions = {}
 
     def __init__(self, genes):
@@ -52,23 +52,20 @@ class Individual:
             obs = self.env.reset(level_string=level_string)
 
         while((not self.done) and self.steps < Individual.nb_steps_max):
+            if render:
+                env.render()
             result = get_result(agent, obs)
-            # if result != self.last_action and result in Individual.dic_actions:
-            #     self.fitness = self.fitness + 1
-            #     if result[0] != 1:
-            #         self.fitness = self.fitness +1
+            if result != self.last_action and result in Individual.dic_actions:
+                self.fitness = self.fitness + 1
+                if result[0] != 1:
+                    self.fitness = self.fitness +1
             obs = self.do_action(result, env)
             self.steps = self.steps + 1
             self.last_action = result
-            if render:
-                env.render()
             
-        self.fitness = fitness(self, env)
+            
+        self.fitness = self.compute_fitness()
         env.close()
-
-    
-
-    
 
 
 class AgentInd(Individual):
@@ -79,10 +76,10 @@ class AgentInd(Individual):
         else:
             self.env=env
             
-        self.avatar_init_location = get_object_location(env, 'avatar')
+        #self.avatar_init_location = get_object_location(env, 'avatar')
         obs = self.env.reset()
         
-        self.agent = AgentNet(get_state(obs), env.action_space)
+        self.agent = AgentNet(get_state(obs), self.env.action_space)
 
         if genes is None:
             genes = self.agent.get_params()
@@ -94,20 +91,28 @@ class AgentInd(Individual):
     def play_game(self, env, render=False):
         self.play_one_game(self.agent, env, render)
 
+    def compute_fitness(self):
+        #avatar_location = get_object_location(env, 'avatar')
+        #distance = np.abs(np.linalg.norm(np.array(indiv.avatar_init_location) - np.array(avatar_location)))
+        # fitness = 0
+        # if self.fitness > 0:
+        #     fitness = 2 - self.steps/Individual.nb_steps_max
+        # elif self.fitness < 0:
+        #     fitness = self.steps/Individual.nb_steps_max - 2
+        return self.fitness
+
     
 
 
 class EnvInd(Individual):
-    height = 100
-    width = 300
+    height = 9
+    width = 13
 
     def __init__(self, genes=None):
         
         self.env = GymWrapper(yaml_file='simple_zelda.yaml')
-        self.fitness = 0
-        self.genes = genes
         self.age = 0
-        self.CA = EnvGrid(EnvInd.width, EnvInd.height, 7)
+        self.CA = EnvGrid(width=EnvInd.width, height=EnvInd.height, num_actions=7)
 
         if genes is None:
             genes = self.CA.get_params()
@@ -116,29 +121,40 @@ class EnvInd(Individual):
         
         super(EnvInd, self).__init__(genes)
 
+        self.fitness = self.compute_fitness()
 
-    def play_game(self, agent):
-        self.play_one_game(agent, self.env, self.generate_env())
+
+    def play_game(self, agent, render=False):
+        level_string = self.generate_env()
+        self.play_one_game(agent, self.env, level_string=level_string, render=render)
 
     
     def generate_env(self):
         level_string = ''
         for i in range(EnvInd.width):
             for j in range(EnvInd.height):
-                block = self.CA.grid[i][j]
-                level_string+=match_block(block).decode().ljust()
+                block = self.CA.grid[j][i]
+                level_string+=match_block(block).ljust(4)
             level_string += '\n'
         
         return level_string
 
-    def fitness_env(self):
-        
-        pass
+    def compute_fitness(self):
+        obs_th = self.env.reset()
+        print(obs_th)
+        obs_gen = self.env.reset(level_string=self.generate_env())
+        distance = np.linalg.norm(obs_th) - np.linalg.norm(obs_gen)
+        distance = np.abs(distance)
+        return distance
+
+    def evolve_CA(self):
+        self.CA.evolve()
+        self.fitness = self.compute_fitness()
 
     
 def match_block(x):
     return {
-        0:'',
+        0:'.',
         1:'A',
         2:'x',
         3:'+',
@@ -148,23 +164,18 @@ def match_block(x):
     }[x]
             
 
-def fitness(indiv, env):
-    #avatar_location = get_object_location(env, 'avatar')
-    #distance = np.abs(np.linalg.norm(np.array(indiv.avatar_init_location) - np.array(avatar_location)))
-    fitness = 0
-    if indiv.fitness > 0:
-        fitness = 2 - indiv.steps/Individual.nb_steps_max
-    elif indiv.fitness < 0:
-        fitness = indiv.steps/Individual.nb_steps_max - 2
-    return fitness
+
     
 def get_result(agent, obs):
     #print("state ",get_state(obs))
     actions = agent(get_state(obs)).detach().numpy()
     #print(actions)
-    action = int(np.argmax(actions[0][:2]))
-    direction = int(np.argmax(actions[0][2:]))
-    a = (action, direction)
+    if (isinstance(agent.n_out, int)):
+        a = int(np.argmax(actions))
+    else:
+        action = int(np.argmax(actions[0][:2]))
+        direction = int(np.argmax(actions[0][2:]))
+        a = (action, direction)
     #print(a)
     return a
 

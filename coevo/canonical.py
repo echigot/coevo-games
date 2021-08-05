@@ -1,3 +1,4 @@
+from coevo.individual import EnvInd
 from numpy import float16, float32, zeros
 from .evolution_strategies import *
 
@@ -44,7 +45,10 @@ class Canonical(ES):
     def populate(self):
         for i in range(self.n_pop):
             new_genes = self.mu + self.sigma * self.s[:, i]
-            self.population[i] = AgentInd(env=self.population[i].env, genes=new_genes)
+            if (isinstance(self.population[0], AgentInd)):
+                self.population[i] = AgentInd(env=self.population[i].env, genes=new_genes)
+            elif(isinstance(self.population[0], EnvInd)):
+                self.population[i] = EnvInd(genes=new_genes)
         return self
 
     def back_random(self, genes_after):
