@@ -27,7 +27,7 @@ def test_automaton():
     for i in range(5):
         env_ind.evolve_CA()
     
-    distance = np.linalg.norm(old_grid) - np.linalg.norm(env_ind.CA.grid)
+    distance = np.linalg.norm(old_grid - env_ind.CA.grid)
     assert np.abs(distance) > 0
 
 
@@ -40,16 +40,18 @@ def test_evo_automaton():
     for i in range(es.n_pop):
         es.population.append(EnvInd())
     
-    for i in range(5):
+    for i in range(20):
 
         pop = es.ask()
 
-        for j in pop:
-            j.evolve_CA()
+        for k in range(np.sqrt(EnvInd.width*EnvInd.height).astype(int)):
+            for j in pop:
+                j.evolve_CA()
         
         es.tell(pop)
         maximum = max(pop, key=lambda p: p.fitness)
-        #print(maximum.CA.grid)
+        print(maximum.CA.grid)
+        print(maximum)
         
 
 test_evo_automaton()

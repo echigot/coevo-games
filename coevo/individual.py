@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from coevo import get_state
 import random as rd
+import copy as cp
 
 
 class Individual:
@@ -105,12 +106,14 @@ class AgentInd(Individual):
 
 
 class EnvInd(Individual):
-    height = 9
-    width = 13
+    height = 13
+    width = 9
+    default_env = GymWrapper(yaml_file='simple_zelda.yaml', level=0)
+    default_obs = cp.copy(default_env.reset())
 
     def __init__(self, genes=None):
         
-        self.env = GymWrapper(yaml_file='simple_zelda.yaml')
+        self.env = cp.copy(EnvInd.default_env)
         self.age = 0
         self.CA = EnvGrid(width=EnvInd.width, height=EnvInd.height, num_actions=7)
 
@@ -125,11 +128,11 @@ class EnvInd(Individual):
 
 
     def play_game(self, agent, render=False):
-        level_string = self.generate_env()
+        level_string = self.env_to_string()
         self.play_one_game(agent, self.env, level_string=level_string, render=render)
 
     
-    def generate_env(self):
+    def env_to_string(self):
         level_string = ''
         for i in range(EnvInd.width):
             for j in range(EnvInd.height):
@@ -140,11 +143,16 @@ class EnvInd(Individual):
         return level_string
 
     def compute_fitness(self):
-        obs_th = self.env.reset()
-        print(obs_th)
-        obs_gen = self.env.reset(level_string=self.generate_env())
-        distance = np.linalg.norm(obs_th) - np.linalg.norm(obs_gen)
-        distance = np.abs(distance)
+        obs_th = EnvInd.default_obs.astype(int)
+        #print("default_obs = ")
+        #print(obs_th)
+        #print("------------")
+        obs_gen = self.env.reset(level_string=self.env_to_string()).astype(int)
+        #print(obs_gen)
+        #distance = np.diff(obs_th - obs_gen, axis = -1)# - np.linalg.norm(obs_gen)
+        distance = np.sum(np.abs(obs_th - obs_gen), axis=-1)
+        #print(distance)
+        distance = np.sum(distance)
         return distance
 
     def evolve_CA(self):
@@ -164,8 +172,6 @@ def match_block(x):
     }[x]
             
 
-
-    
 def get_result(agent, obs):
     #print("state ",get_state(obs))
     actions = agent(get_state(obs)).detach().numpy()
@@ -176,7 +182,6 @@ def get_result(agent, obs):
         action = int(np.argmax(actions[0][:2]))
         direction = int(np.argmax(actions[0][2:]))
         a = (action, direction)
-    #print(a)
     return a
 
 def get_object_location(env, object):

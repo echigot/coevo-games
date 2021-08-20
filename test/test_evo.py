@@ -140,7 +140,7 @@ def test_generation_zelda():
     best_ind = None
     best_fitness = 0
 
-    while (i<10):
+    while (i<100):
         print("-------- Iteration ", i+1," --------")
         if (i==0):
             env.close()
@@ -170,7 +170,7 @@ def test_generation_zelda():
     
     torch.save(best_ind, "best_agent2")
     #print("Best fitness = ", best_fitness)
-    #es.plot(data='mean')
+    es.plot(data='mean')
     env.close()
 
 def test_save_agent():
@@ -208,7 +208,7 @@ def load_best_agent():
 #test_agent_es()
 #test_generations()
 #test_evolution_zelda()
-#test_generation_zelda()
+test_generation_zelda()
 #load_best_agent()
 
 #test_save_agent()
