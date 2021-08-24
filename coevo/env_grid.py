@@ -38,6 +38,19 @@ class EnvGrid():
                 results = self.cell_net(torch.flatten(local_grid).float())
                 self.grid[j][i] = np.argmax(results.detach().numpy())
 
+    def is_bad_env(self):
+        #more walls than half the surface
+        count_wall = np.count_nonzero(self.grid == 6)
+        elim = count_wall >= self.height*self.width*3//4
+        #more than one agent
+        count_agent = np.count_nonzero(self.grid == 1)
+        elim = elim or not (0 < count_agent <= 2) 
+        #nothing on the map except the agent
+        count_objects = np.count_nonzero(self.grid == 4) \
+                 + np.count_nonzero(self.grid == 3) \
+                 + np.count_nonzero(self.grid  == 5)
+        #elim = elim or (count_objects <= 0)
+        return elim
 
     def get_local_grid(self, grid, x, y):
         local_grid = np.ones((3,3))*-1

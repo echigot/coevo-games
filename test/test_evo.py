@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
-import gym
 from griddly import GymWrapper, gd
 import numpy as np
 import torch
-from torch.functional import Tensor
 import copy as cp
 from coevo import AgentNet, get_state, Individual, Canonical, AgentInd, EnvInd, define_action_space
 

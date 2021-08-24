@@ -16,7 +16,8 @@ from coevo import AgentInd
 def test_gen_map():
     env_ind = EnvInd()
     agent_ind = AgentInd(env_ind.env)
-    env_ind.play_game(agent_ind.agent)
+
+    env_ind.play_game(agent_ind.agent, render=False)
 
 
 def test_automaton():
@@ -53,5 +54,3 @@ def test_evo_automaton():
         print(maximum.CA.grid)
         print(maximum)
         
-
-test_evo_automaton()
