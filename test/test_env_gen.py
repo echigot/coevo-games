@@ -17,7 +17,7 @@ def test_gen_map():
     env_ind = EnvInd()
     agent_ind = AgentInd(env_ind.env)
 
-    env_ind.play_game(agent_ind.agent, render=False)
+    env_ind.play_game(agent_ind, render=False)
 
 
 def test_automaton():
@@ -41,7 +41,7 @@ def test_evo_automaton():
     for i in range(es.n_pop):
         es.population.append(EnvInd())
     
-    for i in range(20):
+    for i in range(10):
 
         pop = es.ask()
 

@@ -49,7 +49,7 @@ class EnvGrid():
         count_objects = np.count_nonzero(self.grid == 4) \
                  + np.count_nonzero(self.grid == 3) \
                  + np.count_nonzero(self.grid  == 5)
-        #elim = elim or (count_objects <= 0)
+        elim = elim or (count_objects <= 0)
         return elim
 
     def get_local_grid(self, grid, x, y):

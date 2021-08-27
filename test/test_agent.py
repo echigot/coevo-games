@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from coevo.individual import AgentInd
+from coevo.individual import AgentInd, EnvInd
 import gym
 from griddly import GymWrapper, gd
 import numpy as np
@@ -26,28 +26,33 @@ def test_fitness():
     assert np.all(indiv.genes == indiv.agent.get_params())
     assert indiv.done == False
 
-    fit = indiv.compute_fitness()
+    indiv.compute_fitness()
+    fit = indiv.fitness
 
     assert fit <= 0
 
 def test_fitness_after_step():
-    env = GymWrapper(yaml_file="simple_maze.yaml")
+    envInd = EnvInd()
+    env = envInd.env
     
     indiv = AgentInd(env)
     assert indiv.fitness == 0
 
-    fit_init = indiv.compute_fitness()
-    assert fit_init >=-15
+    indiv.compute_fitness()
+    fit_init = indiv.fitness
+    assert fit_init >=-20
 
-    indiv.play_game(env)
+    indiv.play_game(envInd)
 
-    current_fit = indiv.compute_fitness()
-    assert current_fit >=-15
+    indiv.compute_fitness()
+    current_fit = indiv.fitness
+    assert current_fit >=-20
 
 def test_agent_zelda():
-    env = GymWrapper(yaml_file='simple_zelda.yaml', global_observer_type=gd.ObserverType.SPRITE_2D, player_observer_type=gd.ObserverType.SPRITE_2D)
+    envInd = EnvInd()
+    env = envInd.env
     env.reset()
     indiv = AgentInd(env)
-    indiv.play_game(env)
+    indiv.play_game(envInd)
 
     assert indiv.fitness <= AgentInd.nb_steps_max + 30

@@ -60,12 +60,12 @@ class PopInd(Population):
     def __init__(self, direction="max"):
         super().__init__(AgentInd, direction=direction)
 
-    def improve(self, env):
+    def improve(self, envInd, n):
         pop = self.pop
-        for i in range(5):
+        for i in range(n):
             
             for j in pop:
-                j.play_game(env.env)
+                j.play_game(envInd)
         
             self.es.tell(pop)
             pop = self.es.ask()

@@ -48,7 +48,8 @@ class AgentInd(Individual):
             self.env = Individual.default_env
         else:
             self.env=env
-            
+        
+        self.total_score = 0
         #self.avatar_init_location = get_object_location(env, 'avatar')
         obs = self.env.reset()
         
@@ -59,8 +60,6 @@ class AgentInd(Individual):
         else:
             self.agent.set_params(genes)
         
-        self.total_score = 0
-
         super(AgentInd, self).__init__(genes)
 
     def play_game(self, env=None, render=False):
@@ -77,7 +76,7 @@ class AgentInd(Individual):
         #     fitness = 2 - self.steps/Individual.nb_steps_max
         # elif self.fitness < 0:
         #     fitness = self.steps/Individual.nb_steps_max - 2
-       self.fitness = self.total_score
+        self.fitness = self.total_score
 
     def update_scores(self, game_reward):
         self.total_score = self.total_score + game_reward
@@ -125,9 +124,8 @@ class EnvInd(Individual):
         # obs_gen = self.env.reset(level_string=self.env_to_string()).astype(int)
         # distance = np.sum(np.abs(obs_th - obs_gen), axis=-1)
         # distance = np.sum(distance)
-
-        self.fitness = np.abs(self.max_score-self.min_score)
         #return distance
+        self.fitness = np.abs(self.max_score-self.min_score)
 
     def update_scores(self, game_reward):
 

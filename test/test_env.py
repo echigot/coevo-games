@@ -23,7 +23,7 @@ def test_custom_env():
     env.reset()
 
     for s in range(1000):
-        env.render()
+        #env.render()
         obs, reward, done, info = env.step(env.action_space.sample())
         if done:
             env.reset()
@@ -37,6 +37,3 @@ def test_zelda_env():
         obs, reward, done, info = env.step(action)
         if done:
             env.reset()
-
-
-test_custom_env()

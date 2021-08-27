@@ -16,7 +16,7 @@ def test_coevolution():
     best_env = pop_env.get_best_ind()
     #pop_agents.improve(best_env)
 
-    for i in range(100):
+    for i in range(10):
         pop_env.improve()
 
         pop_env.eliminate()
@@ -37,6 +37,9 @@ def test_coevolution():
 
         pop_agents.evolve()
         pop_env.evolve()
+        
+        #pop_agents.improve(best_env, 10)
+
 
 
 
