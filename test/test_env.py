@@ -5,6 +5,7 @@ from griddly import GymWrapper, gd
 import yaml
 from yaml.loader import Loader
 import numpy as np
+from griddly.RenderTools import VideoRecorder
 
 
 def test_griddly():
@@ -22,7 +23,7 @@ def test_custom_env():
         global_observer_type=gd.ObserverType.SPRITE_2D, player_observer_type=gd.ObserverType.SPRITE_2D)
     env.reset()
 
-    for s in range(1000):
+    for s in range(10):
         #env.render()
         obs, reward, done, info = env.step(env.action_space.sample())
         if done:
@@ -37,3 +38,29 @@ def test_zelda_env():
         obs, reward, done, info = env.step(action)
         if done:
             env.reset()
+
+
+def test_video():
+    video_recorder = VideoRecorder()
+
+    env = GymWrapper(yaml_file='simple_zelda.yaml', global_observer_type=gd.ObserverType.SPRITE_2D, player_observer_type=gd.ObserverType.SPRITE_2D)
+    env.reset()
+    obs = env.render()
+    video_recorder.start("video_test.mp4", obs.shape)
+    
+    for s in range(20):
+        action = env.action_space.sample()
+        obs, reward, done, info = env.step(action)
+        
+        image = env.render()
+        video_recorder.add_frame(image)
+
+        if done:
+            env.reset()
+
+    
+    video_recorder.close()
+
+
+#test_griddly()
+test_video()

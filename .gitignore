@@ -160,4 +160,4 @@ cython_debug/
 
 last_agents/
 
-.mp4
+*.mp4
