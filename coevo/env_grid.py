@@ -8,6 +8,8 @@ from torch.nn.modules.rnn import LSTM
 import torch.optim
 from coevo.env_cell import EnvCell
 
+# Handles the cellular automaton's features for the environment
+# generation
 class EnvGrid():
 
     def __init__(self, width, height, num_actions):
@@ -26,6 +28,10 @@ class EnvGrid():
             for j in range(height):
                 self.grid[j][i] = 0
 
+    # Evolves the cellular automaton by applying the neural networks in
+    # all the cells
+    # If there is nothing on the map, we begin by setting the middle cell
+    # to 1
     def evolve(self):
         old_grid = cp.deepcopy(self.grid)
         if (self.grid.sum() == 0):
@@ -38,6 +44,7 @@ class EnvGrid():
                 results = self.cell_net(torch.flatten(local_grid).float())
                 self.grid[j][i] = np.argmax(results.detach().numpy())
 
+    # Defines if an environment is bad for arbitrary reasons
     def is_bad_env(self):
         #more walls than half the surface
         count_wall = np.count_nonzero(self.grid == 6)
@@ -52,6 +59,11 @@ class EnvGrid():
         elim = elim or (count_objects <= 0)
         return elim
 
+    # Returns the closest neighbours of a cell with x, y being the coordinates of the cell 
+    # If the cell is located near a border, -1 is put as the neigbour value 
+    # ex: -1 0 1
+    #     -1 2 0
+    #     -1 2 0
     def get_local_grid(self, grid, x, y):
         local_grid = np.ones((3,3))*-1
         #position of the submatrix into the new matrix (local_grid)

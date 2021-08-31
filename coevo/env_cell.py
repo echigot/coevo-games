@@ -10,6 +10,7 @@ import torch.nn.functional as F
 from torch.nn.modules.rnn import LSTM
 import torch.optim
 
+# Manages the cellular automaton's neural network 
 class EnvCell(nn.Module):
 
       def __init__(self, local_grid, num_actions):

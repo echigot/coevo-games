@@ -9,7 +9,7 @@ import torch.optim
 import numpy as np
 from gym import spaces
 
-
+# Manages the agent's CNN
 class AgentNet(nn.Module):
     def __init__(self, obs, action_space):
 
@@ -17,9 +17,12 @@ class AgentNet(nn.Module):
 
         in_channels = obs.shape[1]
         
+        # allows more flexibility regarding the game
         if (isinstance(action_space, int)):
+            # Labyrinth
             self.n_out = action_space
         elif (isinstance(action_space, Discrete)):
+            # Zelda
             self.n_out = action_space.n
         else:
             self.n_out=np.sum(action_space.nvec[:])
@@ -27,6 +30,7 @@ class AgentNet(nn.Module):
         kernel_size = 3
         linear_flatten = np.prod(obs.shape[1:])*kernel_size*4
 
+        # convolutionnal layers
         self.conv = nn.Sequential(
             nn.Conv2d(in_channels, 6, kernel_size, padding=1),
             nn.Identity(),
@@ -35,19 +39,12 @@ class AgentNet(nn.Module):
             nn.Flatten(),
         )
 
-        #couche récurrente
+        # recurrent layer
         hidden_state = torch.rand(1, 1, 128)
         cell_state = torch.rand(1, 1, 128)
 
         self.fc_hidden = nn.LSTM(linear_flatten, 128)
         self.hidden = (hidden_state, cell_state)
-
-        #self.fc_hidden_sc = nn.LSTM(128, 128)
-        #self.hidden_sc = (hidden_state, cell_state)
-
-        #self.fc_hidden_th = nn.LSTM(128, 128)
-        #self.hidden_th = (hidden_state, cell_state)
-        #self.fc_hidden = nn.Linear(in_features=linear_flatten, out_features=128)
         
         # Output layer:
         self.output = nn.Linear(in_features=128, out_features=self.n_out)
@@ -57,41 +54,32 @@ class AgentNet(nn.Module):
     # As per implementation instructions according to pytorch, the forward function should be overwritten by all
     # subclasses
     def forward(self, x):
-        #print("first", x)
         # Rectified output from the first conv layer
         x = self.conv(x)
-        #print("sec ", x)
         
         # Rectified output from the final hidden layer
-        #x = F.relu(self.fc_hidden(x))#, self.hx))
         x = x.unsqueeze(0)
-        #hx = torch.zeros(1, 1, 128)
         y, self.hidden = self.fc_hidden(x, self.hidden)
-        #y, self.hidden_sc = self.fc_hidden_sc(y, self.hidden_sc)
-
-        #y, self.hidden_th = self.fc_hidden_th(y, self.hidden_th)
-        #print("third ", x)
         # Returns the output from the fully-connected linear layer
 
         y = y.contiguous().view(-1, 128)
 
         y = self.output(y)
-        #print("last ", x)
 
-        #print("params = ",self.get_params())
         return y
 
     def get_params(self):
         with torch.no_grad():
-            #params = self.parameters()
-            vec = torch.nn.utils.parameters_to_vector(self.parameters())
+            params = self.parameters()
+            vec = torch.nn.utils.parameters_to_vector(params)
         return vec.cpu().numpy()
 
     def set_params(self, params):
         a = self.parameters()
         torch.nn.utils.vector_to_parameters(torch.tensor(params), a)
 
-
+# Converts from binary 3D matrix to [0-6] 2D matrix
+# Also, converts said matrix to the right format
 def get_state(s, device="cpu"):
     frame = torch.zeros(s.shape[1], s.shape[2])
     for i in range (s.shape[0]) :
