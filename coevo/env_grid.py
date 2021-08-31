@@ -46,17 +46,24 @@ class EnvGrid():
 
     # Defines if an environment is bad for arbitrary reasons
     def is_bad_env(self):
-        #more walls than half the surface
+        surface = self.height*self.width
+        # more walls than half the surface
         count_wall = np.count_nonzero(self.grid == 6)
-        elim = count_wall >= self.height*self.width*3//4
-        #more than one agent
+        elim = count_wall >= surface//2
+
+        # more enemies than half the surface
+        #count_enemies = np.count_nonzero(self.grid == 5)
+        #elim = elim or (count_enemies >= surface//2)
+
+        # more than two agents
         count_agent = np.count_nonzero(self.grid == 1)
         elim = elim or not (0 < count_agent <= 2) 
-        #nothing on the map except the agent
-        count_objects = np.count_nonzero(self.grid == 4) \
+        # nothing on the map or no free space
+        count_objects = np.count_nonzero(self.grid == 2) \
                  + np.count_nonzero(self.grid == 3) \
+                 + np.count_nonzero(self.grid  == 4) \
                  + np.count_nonzero(self.grid  == 5)
-        elim = elim or (count_objects <= 0)
+        elim = elim or not (0 < count_objects < surface * 3//4)
         return elim
 
     # Returns the closest neighbours of a cell with x, y being the coordinates of the cell 
@@ -66,9 +73,9 @@ class EnvGrid():
     #     -1 2 0
     def get_local_grid(self, grid, x, y):
         local_grid = np.ones((3,3))*-1
-        #position of the submatrix into the new matrix (local_grid)
+        # position of the submatrix into the new matrix (local_grid)
         x1,x2,y1,y2 = 0,3,0,3
-        #coordinates of the submatrix in the original grid
+        # coordinates of the submatrix in the original grid
         submatrix_x, submatrix_y, submatrix_w, submatrix_h = x-1, y-1, 3, 3
 
         if (x == 0):

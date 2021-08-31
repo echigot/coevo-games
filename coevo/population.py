@@ -11,7 +11,7 @@ class Population:
         # creates one individual to initialize a Canonical population
         init_ind = indType()
         len_params = len(init_ind.genes)
-        self.es = Canonical(len_params, direction=direction) 
+        self.es = Canonical(len_params, direction=direction, n=60) 
 
         for i in range(self.es.n_pop):
             self.es.population.append(indType())

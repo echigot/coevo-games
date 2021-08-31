@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from coevo.individual import play_one_game
+from sys import platform
 from coevo.population import PopEnv, PopInd
 import gym
 from griddly import GymWrapper, gd
@@ -14,9 +16,10 @@ def test_coevolution():
     pop_env = PopEnv()
     pop_agents = PopInd()
     best_env = pop_env.get_best_ind()
-    #pop_agents.improve(best_env)
+    generic_env = EnvInd()
+    pop_agents.improve(generic_env, 10)
 
-    for i in range(10):
+    for i in range(50):
         pop_env.improve()
 
         pop_env.eliminate()
@@ -38,9 +41,8 @@ def test_coevolution():
         pop_agents.evolve()
         pop_env.evolve()
         
-        #pop_agents.improve(best_env, 10)
+        #pop_agents.improve(generic_env, 10)
 
-
-
-
+    play_one_game(best_agent, best_env, video=True)
+    
 test_coevolution()

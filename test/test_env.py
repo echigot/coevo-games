@@ -20,8 +20,9 @@ def test_custom_env():
         global_observer_type=gd.ObserverType.SPRITE_2D, player_observer_type=gd.ObserverType.SPRITE_2D)
     env.reset()
 
-    for s in range(10):
+    for s in range(1000):
         obs, reward, done, info = env.step(env.action_space.sample())
+        env.render()
         if done:
             env.reset()
 
@@ -44,7 +45,7 @@ def test_video():
     obs = env.render()
     video_recorder.start("video_test.mp4", obs.shape)
     
-    for s in range(10):
+    for s in range(100):
         action = env.action_space.sample()
         obs, reward, done, info = env.step(action)
         
@@ -56,3 +57,6 @@ def test_video():
 
     
     video_recorder.close()
+
+
+test_custom_env()
