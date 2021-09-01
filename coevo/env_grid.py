@@ -48,7 +48,7 @@ class EnvGrid():
     def is_bad_env(self):
         surface = self.height*self.width
         # more walls than half the surface
-        count_wall = np.count_nonzero(self.grid == 6)
+        count_wall = np.count_nonzero(self.grid == 4)
         elim = not ( surface//10 <= count_wall <= surface//2)
 
         # more enemies than half the surface
@@ -58,12 +58,11 @@ class EnvGrid():
         # more than two agents
         # count_agent = np.count_nonzero(self.grid == 1)
         # elim = elim or not (0 < count_agent <= 2) 
-        
+
         # nothing on the map or no free space
         count_objects = np.count_nonzero(self.grid == 2) \
                  + np.count_nonzero(self.grid == 3) \
-                 + np.count_nonzero(self.grid  == 4) \
-                 + np.count_nonzero(self.grid  == 5)
+                 + np.count_nonzero(self.grid  == 1)
         elim = elim or not (0 < count_objects < surface * 3//4)
         return elim
 
