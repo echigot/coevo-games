@@ -17,10 +17,15 @@ def test_coevolution():
     pop_agents = PopInd()
     best_env = pop_env.get_best_ind()
     generic_env = EnvInd()
+
     pop_agents.improve(generic_env, 10)
 
     for i in range(50):
         pop_env.improve()
+
+        if (i == 1):
+            print("now")
+
 
         pop_env.eliminate()
         print(pop_env.real_n_pop)
@@ -45,6 +50,10 @@ def test_coevolution():
 
     pop_agents.plot()
     pop_env.plot()
-    play_one_game(best_agent, best_env, video=True)
+    play_one_game(best_agent, best_env, video=True, title="video_last_1.mp4")
+
+    agent_hof = AgentInd(genes=pop_agents.es.hof[0].genes)
+    env_hof = EnvInd(genes=pop_env.es.hof[0].genes)
+    play_one_game(agent_hof, env_hof, video=True, title="video_hof_1.mp4")
     
 test_coevolution()
