@@ -38,6 +38,9 @@ class Population:
     def get_best_ind(self):
         return max(self.pop, key=lambda p: p.fitness)
 
+    def plot(self):
+        self.es.plot(data="max")
+
 # Population of EnvInd
 class PopEnv(Population):
 

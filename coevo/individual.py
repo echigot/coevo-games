@@ -107,7 +107,7 @@ class EnvInd(Individual):
         self.age = 0
 
         # Initializes the Cellular Automaton
-        self.CA = EnvGrid(width=EnvInd.width, height=EnvInd.height, num_actions=7)
+        self.CA = EnvGrid(width=EnvInd.width, height=EnvInd.height, num_actions=5)
         self.playable = True
 
         self.min_score = 0
@@ -180,15 +180,16 @@ class EnvInd(Individual):
 
 # Returns the environment encoding for a given CA output value
 def match_block(x):
+# agent (A): yellow
+# fire (x): magenta
     return {
-        0:'.',
-        1:'A',
-        2:'x',
-        3:'+',
-        4:'g',
-        5:'3',
-        6:'w',
+        0:'.', # empty: red 
+        1:'+', # key: green
+        2:'g', # door: light blue
+        3:'3', # spider: dark blue
+        4:'w', # wall: pink
     }[x]
+
             
 
 # Returns the result of the agent's CNN given a game state

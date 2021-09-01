@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from coevo.individual import play_one_game
+from coevo import play_one_game
 from sys import platform
 from coevo.population import PopEnv, PopInd
 import gym
@@ -43,6 +43,8 @@ def test_coevolution():
         
         #pop_agents.improve(generic_env, 10)
 
+    pop_agents.plot()
+    pop_env.plot()
     play_one_game(best_agent, best_env, video=True)
     
 test_coevolution()
