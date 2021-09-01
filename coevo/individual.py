@@ -180,7 +180,6 @@ class EnvInd(Individual):
 
 # Returns the environment encoding for a given CA output value
 def match_block(x):
-# agent (A): yellow
 # fire (x): magenta
     return {
         0:'.', # empty: red 
@@ -188,6 +187,7 @@ def match_block(x):
         2:'g', # door: light blue
         3:'3', # spider: dark blue
         4:'w', # wall: pink
+        5:'A', # agent: yellow
     }[x]
 
             

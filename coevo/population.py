@@ -67,6 +67,8 @@ class PopEnv(Population):
         for j in self.pop:
             for i in range(np.sqrt(EnvInd.width*EnvInd.height).astype(int)):
                 j.evolve_CA()
+            
+            j.CA.grid[1][1] = 5 # puts an agent 
 
 
 

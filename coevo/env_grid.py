@@ -49,15 +49,16 @@ class EnvGrid():
         surface = self.height*self.width
         # more walls than half the surface
         count_wall = np.count_nonzero(self.grid == 6)
-        elim = count_wall >= surface//2
+        elim = not ( surface//10 <= count_wall <= surface//2)
 
         # more enemies than half the surface
         #count_enemies = np.count_nonzero(self.grid == 5)
         #elim = elim or (count_enemies >= surface//2)
 
         # more than two agents
-        count_agent = np.count_nonzero(self.grid == 1)
-        elim = elim or not (0 < count_agent <= 2) 
+        # count_agent = np.count_nonzero(self.grid == 1)
+        # elim = elim or not (0 < count_agent <= 2) 
+        
         # nothing on the map or no free space
         count_objects = np.count_nonzero(self.grid == 2) \
                  + np.count_nonzero(self.grid == 3) \
