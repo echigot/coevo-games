@@ -8,6 +8,7 @@ from griddly import GymWrapper, gd
 import numpy as np
 import torch
 import copy as cp
+from tqdm import tqdm
 from coevo import Canonical, AgentInd, EnvInd, Population
 
 
@@ -18,14 +19,10 @@ def test_coevolution():
     best_env = pop_env.get_best_ind()
     generic_env = EnvInd()
 
-    pop_agents.improve(generic_env, 10)
+    pop_agents.improve(generic_env, 20)
 
-    for i in range(50):
+    for i in tqdm(range(50)):
         pop_env.improve()
-
-        if (i == 1):
-            print("now")
-
 
         pop_env.eliminate()
         print(pop_env.real_n_pop)

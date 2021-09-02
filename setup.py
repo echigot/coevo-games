@@ -10,7 +10,7 @@ setup(
    description='Coevolution of Agents and Games',
    long_description=open('README.md').read(),
    install_requires=[
-       "torch", "gym", "stable_baselines3", "griddly"
+       "torch", "gym", "stable_baselines3", "griddly", "tqdm"
    ],
 )
 

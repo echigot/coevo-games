@@ -84,7 +84,7 @@ class ES:
     
     def log(self):
         #max_fit = self.hof[0].fitness
-        max_fit = max(self.population, key=lambda p: p.fitness)
+        max_fit = max(self.population, key=lambda p: p.fitness).fitness
         self.max_fit.append(max_fit)
         self.mean_fit.append(np.mean([i.fitness for i in self.population]))
         evals = 0
