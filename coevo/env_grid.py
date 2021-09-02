@@ -63,7 +63,8 @@ class EnvGrid():
         count_objects = np.count_nonzero(self.grid == 2) \
                  + np.count_nonzero(self.grid == 3) \
                  + np.count_nonzero(self.grid  == 1)
-        elim = elim or not (0 < count_objects < surface * 3//4)
+        elim = elim or not (0 < count_objects < surface // 2)
+        elim = elim or (count_objects + count_wall >= 3//4)
         return elim
 
     # Returns the closest neighbours of a cell with x, y being the coordinates of the cell 
