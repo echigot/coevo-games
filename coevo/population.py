@@ -1,6 +1,7 @@
 from coevo.individual import AgentInd, EnvInd, Individual
 from coevo.canonical import Canonical
 import numpy as np
+import torch
 
 # Manages populations of individuals in a coevolution context
 class Population:
@@ -41,6 +42,7 @@ class Population:
     def plot(self):
         self.es.plot(data="max")
 
+
 # Population of EnvInd
 class PopEnv(Population):
 
@@ -70,6 +72,10 @@ class PopEnv(Population):
             
             j.CA.grid[1][1] = 5 # puts an agent 
 
+    
+    def save(self, envInd):
+        torch.save(envInd.CA.cell_net.state_dict(), "env_save")
+
 
 
 # Population of AgentInd
@@ -89,3 +95,6 @@ class PopInd(Population):
         
             self.es.tell(pop)
             pop = self.es.ask()
+
+    def save(self, agentInd):
+        torch.save(agentInd.agent.state_dict(), "agent_save")
