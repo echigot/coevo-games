@@ -22,37 +22,38 @@ def test_coevolution():
     best_env = pop_env.get_best_ind()
     generic_env = EnvInd()
 
-    pop_agents.improve(generic_env, 20)
+    #pop_agents.improve(generic_env, 20)
 
-    for i in tqdm(range(50)):
+    for i in tqdm(range(5)):
         pop_env.improve()
 
         pop_env.eliminate()
-        surviving_envs.append(pop_env.real_n_pop)
-        
+        print(pop_env.real_n_pop)
+        surviving_envs.append((pop_env.real_n_pop/pop_env.es.n_pop)*100)
+
         pop_env.play(pop_agents)
         pop_agents.evaluate()
         pop_env.evaluate()
 
         best_env = pop_env.get_best_ind()
         best_agent = pop_agents.get_best_ind()
-        
+
         print(best_agent)
         print(best_agent.fitness)
 
         print(best_env)
         print(best_env.env_to_string())
 
+        if i%50 == 0:
+            pop_agents.save(best_agent, "save/agent_"+str(i))
+            pop_env.save(best_env, "save/env_"+str(i))
+            play_one_game(best_agent, best_env, video=True, title="video/video_"+str(i)+".mp4")
+
         pop_agents.evolve()
         pop_env.evolve()
-        
+
         #pop_agents.improve(generic_env, 10)
 
-        agent_hof = AgentInd(genes=pop_agents.es.hof[0].genes)
-        env_hof = EnvInd(genes=pop_env.es.hof[0].genes)
-
-        pop_agents.save(agent_hof)
-        pop_env.save(env_hof)
 
 
     plt.plot(surviving_envs)
@@ -60,18 +61,6 @@ def test_coevolution():
 
     pop_agents.plot()
     pop_env.plot()
-    play_one_game(best_agent, best_env, video=True, title="video_last_1.mp4")
+    play_one_game(best_agent, best_env, video=True, title="video/video_last.mp4")
 
-
-    agent_hof = AgentInd(genes=pop_agents.es.hof[0].genes)
-    env_hof = EnvInd(genes=pop_env.es.hof[0].genes)
-
-    pop_agents.save(agent_hof)
-    pop_env.save(env_hof)
-
-    print("Best environment:")
-    print(env_hof.env_to_string())
-
-    play_one_game(agent_hof, env_hof, video=True, title="video_hof_1.mp4")
-    
 test_coevolution()

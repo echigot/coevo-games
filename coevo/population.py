@@ -12,7 +12,7 @@ class Population:
         # creates one individual to initialize a Canonical population
         init_ind = indType()
         len_params = len(init_ind.genes)
-        self.es = Canonical(len_params, direction=direction) 
+        self.es = Canonical(len_params, direction=direction)
 
         for i in range(self.es.n_pop):
             self.es.population.append(indType())
@@ -33,7 +33,7 @@ class Population:
         self.es.tell(self.pop)
         self.pop = self.es.ask()
         self.real_n_pop = self.es.n_pop
-    
+
     # Returns the best individual of the population
     # (ie: best fitness)
     def get_best_ind(self):
@@ -55,7 +55,7 @@ class PopEnv(Population):
         for i in self.pop:
             if i.remove_bad_env():
                 self.real_n_pop = self.real_n_pop - 1
-    
+
     # Plays every combination of agent and playable environment
     def play(self, pop_agents):
         for a in (pop_agents.pop):
@@ -69,12 +69,12 @@ class PopEnv(Population):
         for j in self.pop:
             for i in range(np.sqrt(EnvInd.width*EnvInd.height).astype(int)):
                 j.evolve_CA()
-            
-            j.CA.grid[1][1] = 5 # puts an agent 
 
-    
-    def save(self, envInd):
-        torch.save(envInd.CA.cell_net.state_dict(), "env_save")
+            j.CA.grid[1][1] = 5 # puts an agent
+
+
+    def save(self, envInd, title="save/env_save"):
+        torch.save(envInd.CA.cell_net.state_dict(), title)
 
 
 
@@ -89,12 +89,12 @@ class PopInd(Population):
     def improve(self, envInd, n):
         pop = self.pop
         for i in range(n):
-            
+
             for j in pop:
                 j.play_game(envInd)
-        
+
             self.es.tell(pop)
             pop = self.es.ask()
 
-    def save(self, agentInd):
-        torch.save(agentInd.agent.state_dict(), "agent_save")
+    def save(self, agentInd, title="save/agent_save"):
+        torch.save(agentInd.agent.state_dict(), title)

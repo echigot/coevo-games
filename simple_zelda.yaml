@@ -124,7 +124,7 @@ Actions:
             - eq: [src.has_key, 1]
           Object: avatar
           Commands:
-            - reward: 1
+            - reward: 20
             # - decr: has_key
             - mov: _dest
             # - set_tile: 0
