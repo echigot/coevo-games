@@ -10,7 +10,7 @@ import torch
 import copy as cp
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from coevo import Canonical, AgentInd, EnvInd, Population
+from coevo import Canonical, AgentInd, EnvInd, Population, AgentNet, get_state
 
 
 def test_coevolution():
@@ -63,5 +63,28 @@ def test_coevolution():
     pop_env.plot()
     play_one_game(best_agent, best_env, video=True, title="video/video_last.mp4")
 
+def test_best_agents():
+    envInd = EnvInd()
+    env = envInd.env
+    #define_action_space(env)
+    obs = env.reset()
+    agent = AgentNet(get_state(obs), env.action_space)
 
-test_coevolution()
+    agent.load_state_dict(torch.load("save/agent_9900"))
+
+    indiv = AgentInd(env=env, genes=agent.get_params())
+    play_one_game(indiv, envInd)#, video=True, title="video/best_agent_normal_env3.mp4")
+    indiv.compute_fitness()
+    print(indiv.fitness)
+    return indiv.fitness
+
+
+#test_coevolution()
+#test_best_agents()
+
+# results = []
+# for i in range(200):
+#     results.append(test_best_agents())
+# print(sum(results)/200)
+# plt.plot(results)
+# plt.show()
