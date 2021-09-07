@@ -16,16 +16,6 @@ Environment:
   Levels:
     - |
       wwwwwwwwwwwww
-      w.g.......3.w
-      w...........w
-      w.....A.+...w
-      w.+.........w
-      w.+.....3...w
-      w...3.......w
-      w.g.........w
-      wwwwwwwwwwwww
-    - |
-      wwwwwwwwwwwww
       wg....+..+g.w
       w.+.w.......w
       w.....A.....w
@@ -34,6 +24,17 @@ Environment:
       wg.3......g.w
       w.....+++.+ww
       wwwwwwwwwwwww
+    - |
+      wwwwwwwwwwwww
+      w.g.......3.w
+      w...........w
+      w.....A.+...w
+      w.+.........w
+      w.+.....3...w
+      w...3.......w
+      w.g.........w
+      wwwwwwwwwwwww
+
     - |
       wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
       w........+....3..............w
