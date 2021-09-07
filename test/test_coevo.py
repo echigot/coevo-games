@@ -24,7 +24,7 @@ def test_coevolution():
 
     #pop_agents.improve(generic_env, 20)
 
-    for i in tqdm(range(5)):
+    for i in tqdm(range(100)):
         pop_env.improve()
 
         pop_env.eliminate()
@@ -62,5 +62,6 @@ def test_coevolution():
     pop_agents.plot()
     pop_env.plot()
     play_one_game(best_agent, best_env, video=True, title="video/video_last.mp4")
+
 
 test_coevolution()
