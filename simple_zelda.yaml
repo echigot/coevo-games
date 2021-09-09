@@ -14,17 +14,17 @@ Environment:
     Lose:
       - eq: [avatar:count, 0]
   Levels:
-    - |
+    - | #simple map
       wwwwwwwwwwwww
-      wg....+..+g.w
-      w.+.w.......w
-      w.....A.....w
-      w+..+.......w
-      w....w..+...w
-      wg.3......g.w
-      w.....+++.+ww
+      w.g.........w
+      w...........w
+      w.....A.+...w
+      w.+.........w
+      w.+.........w
+      w...3.......w
+      w.g.........w
       wwwwwwwwwwwww
-    - |
+    - | #spider map
       wwwwwwwwwwwww
       w.g.......3.w
       w...........w
@@ -34,6 +34,17 @@ Environment:
       w...3.......w
       w.g.........w
       wwwwwwwwwwwww
+    - | #complex map
+      wwwwwwwwwwwww
+      wg....+..+g.w
+      w.+.w.......w
+      w.....A.....w
+      w+..+.......w
+      w....w..+...w
+      wg.3......g.w
+      w.....+++.+ww
+      wwwwwwwwwwwww
+
 
     - |
       wwwwwwwwwwwwwwwwwwwwwwwwwwwwww

@@ -167,7 +167,7 @@ def test_generation_zelda():
 
 
     # for i in range(es.n_pop):
-    #     torch.save(pop[i].agent.state_dict(), "last_agents/last_agent"+str(i))
+    #     torch.save(pop[i].agent.state_dict(), "save/last_agent"+str(i))
 
     torch.save(best_ind, "save/best_agent_trained_normal_env")
     print("Best fitness = ", best_fitness)
@@ -187,7 +187,7 @@ def test_load_agent(number=5):
     obs = env.reset()
     agent = AgentNet(get_state(obs), env.action_space)
 
-    agent.load_state_dict(torch.load("last_agents/last_agent"+str(number)))
+    agent.load_state_dict(torch.load("save/last_agent"+str(number)))
 
     indiv = AgentInd(env=env, genes=agent.get_params())
     indiv.play_game(envInd, render=False)

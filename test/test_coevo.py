@@ -70,10 +70,10 @@ def test_best_agents():
     obs = env.reset()
     agent = AgentNet(get_state(obs), env.action_space)
 
-    agent.load_state_dict(torch.load("save/agent_9900"))
+    agent.load_state_dict(torch.load("save/best_agent_trained_normal_env"))
 
     indiv = AgentInd(env=env, genes=agent.get_params())
-    play_one_game(indiv, envInd)#, video=True, title="video/best_agent_normal_env3.mp4")
+    play_one_game(indiv, envInd)#, video=True, title="video/best_agent_classic_training_normal_env.mp4")
     indiv.compute_fitness()
     print(indiv.fitness)
     return indiv.fitness
@@ -82,9 +82,9 @@ def test_best_agents():
 #test_coevolution()
 #test_best_agents()
 
-# results = []
-# for i in range(200):
-#     results.append(test_best_agents())
-# print(sum(results)/200)
-# plt.plot(results)
-# plt.show()
+results = []
+for i in range(200):
+    results.append(test_best_agents())
+print(sum(results)/200)
+plt.plot(results)
+plt.show()
