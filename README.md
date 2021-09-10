@@ -65,7 +65,7 @@ The general process of one co-evolution cycle in this context is:
 4. Run agents on the remaining environments
 5. Evaluate and evolve
 
-Elimination criteria (```is_bad_env()```) are quite simple and arbitrary. At the moment, a map should contain between 10% and 50% of walls, and other objects shoud not cover more than 50% of the environment.
+Elimination criteria (```is_bad_env()```) are quite simple and arbitrary. At the moment, a map should contain between 10% and 50% of walls, and other objects should not cover more than 50% of the environment.
 
 # Future improvements
 
